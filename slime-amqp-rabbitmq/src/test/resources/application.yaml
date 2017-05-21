@@ -1,0 +1,4 @@
+slime:
+   amqp:
+     rabbitmq:
+      location: classpath:mq.json

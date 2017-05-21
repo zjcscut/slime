@@ -1,0 +1,48 @@
+{
+  "producers": [
+    {
+      "username": "guest",
+      "password": "guest",
+      "host": "localhost",
+      "port": 5672,
+      "virtualHost": "/",
+      "useConfirmCallback": true,
+      "mandatory": true,
+      "useReturnCallback": true,
+      "description": "本地生产者mq配置",
+      "instanceSign": "PRODUCER-1",
+      "bindingParameters": [
+        {
+          "queueName": "queue-1",
+          "exchangeName": "exchange1",
+          "exchangeType": "DIRECT",
+          "routingKey": "queue-key-1",
+          "description": "Description"
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "username": "guest",
+      "password": "guest",
+      "host": "localhost",
+      "port": 5672,
+      "virtualHost": "/",
+      "description": "本地消费者mq配置",
+      "instanceSign": "CONSUMER-1",
+      "consumerBindingParameters": [
+        {
+          "queueName": "queue-1",
+          "exchangeName": "exchange1",
+          "exchangeType": "DIRECT",
+          "routingKey": "queue-key-1",
+          "description": "Description",
+          "listenerClassName": "org.throwable.rabbitmq.support.Listener",
+          "concurrentConsumers": 10,
+          "maxConcurrentConsumers": 20
+        }
+      ]
+    }
+  ]
+}
