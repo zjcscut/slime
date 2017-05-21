@@ -20,7 +20,7 @@ amqp协议下的rabbitmq模块，提供Rabbitmq多实例支持。
 
 使用指南:
 
-入口函数Application添加注解**@EnableAmqpRabbitmq: **
+入口函数Application添加注解@**EnableAmqpRabbitmq:**
 
 ```java
 @SpringBootApplication
@@ -98,7 +98,7 @@ slime:
 }
 ```
 
-**WARN: **
+**WARN:**
 
  1.instanceSign必须保证和host、port绑定并且全局唯一;
 
@@ -165,7 +165,7 @@ public class Listener implements MessageListener {
 
 
 
-####未完待续...
+#### 未完待续...
 
 
 
