@@ -2,17 +2,13 @@ package org.throwable.rabbitmq.support;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.SimpleResourceHolder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.throwable.rabbitmq.Application;
-import org.throwable.rabbitmq.annotation.EnableAmqpRabbitmq;
 import org.throwable.rabbitmq.configuration.RabbitmqProperties;
-
-import static org.junit.Assert.*;
 
 /**
  * @author throwable
@@ -22,14 +18,13 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
-@EnableAmqpRabbitmq
 public class RabbitmqInstanceRegistrarTest {
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private RabbitmqProperties rabbitmqProperties;
 
 	@Autowired
-	private RabbitmqProperties rabbitmqProperties;
+	private RabbitTemplate rabbitTemplate;
 
 	@Test
 	public void testRegiesterRabbitmqComponent() throws Exception {
