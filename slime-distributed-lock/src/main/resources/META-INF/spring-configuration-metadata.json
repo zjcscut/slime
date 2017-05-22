@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "slime.distrubited.lock.zookeeperConfigurationLocation",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.lock.configuration.DistributedLockProperties"
+    },
+    {
+      "name": "slime.distrubited.lock.redissonConfigurationLocation",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.lock.configuration.DistributedLockProperties"
+    }
+  ]
+}

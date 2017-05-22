@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @function
  * @since 2017/5/18 15:28
  */
-@ConfigurationProperties(prefix = "distrubited.lock")
+@ConfigurationProperties(prefix = "slime.distrubited.lock")
 public class DistributedLockProperties {
 
     private String zookeeperConfigurationLocation;

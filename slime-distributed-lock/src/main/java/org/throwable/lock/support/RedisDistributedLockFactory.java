@@ -26,7 +26,7 @@ public class RedisDistributedLockFactory implements DistributedLockFactory, Disp
 
     private static final String DEFAULT_LOCK_KEY_PREFIX = "REDISSON_LOCK_KEY_";
 
-    private static RedissonClient client;
+    private RedissonClient client;
 
     @Autowired
     private DistributedLockProperties distributedLockProperties;
@@ -43,8 +43,7 @@ public class RedisDistributedLockFactory implements DistributedLockFactory, Disp
             if (null == client) {
             	String location = distributedLockProperties.getRedissonConfigurationLocation();
 				Assert.hasText(location, "Distributed lock redisson configuration location must not be blank!!!");
-                InputStream inputStream = new ClassPathResource(location)
-                        .getInputStream();
+                InputStream inputStream = new ClassPathResource(location).getInputStream();
                 Config config = Config.fromYAML(inputStream);
                 client = Redisson.create(config);
             }

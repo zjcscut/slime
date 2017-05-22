@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "slime.amqp.rabbitmq.location",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.rabbitmq.configuration.RabbitmqProperties"
+    },
+    {
+      "name": "slime.amqp.rabbitmq.mode",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.rabbitmq.configuration.RabbitmqProperties"
+    }
+  ]
+}

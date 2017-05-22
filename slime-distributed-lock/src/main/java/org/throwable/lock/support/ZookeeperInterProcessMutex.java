@@ -142,9 +142,13 @@ public class ZookeeperInterProcessMutex implements InterProcessLock, Revocable<Z
 		return LockInternals.getParticipantNodes(internals.getClient(), basePath, internals.getLockName(), internals.getDriver());
 	}
 
+	/**
+	 * MoreExecutors.newDirectExecutorService
+	 * @since guava 18.0 (present as MoreExecutors.sameThreadExecutor() since guava 10.0)
+	 */
 	@Override
 	public void makeRevocable(RevocationListener<ZookeeperInterProcessMutex> listener) {
-		makeRevocable(listener, MoreExecutors.sameThreadExecutor());
+		makeRevocable(listener, MoreExecutors.newDirectExecutorService());
 	}
 
 	@Override
