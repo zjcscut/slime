@@ -1,6 +1,8 @@
 package org.throwable.redis.annotation;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
+import org.throwable.redis.configuration.RedisProperties;
 import org.throwable.redis.support.JedisClusterRegistrar;
 
 import java.lang.annotation.*;
@@ -15,6 +17,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import({JedisClusterRegistrar.class})
+@EnableConfigurationProperties(RedisProperties.class)
 public @interface EnableRedisCluster {
 
 }

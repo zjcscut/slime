@@ -3,8 +3,7 @@ package org.throwable.redis.support;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -13,7 +12,9 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.util.Assert;
 import org.throwable.redis.configuration.RedisProperties;
+import org.throwable.utils.EnvironmentUtils;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
@@ -24,72 +25,54 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public class JedisSingleClientRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 
-    private static final String SPRING_REDIS_PREFIX = "spring.redis";
-    private static String SPRING_REDIS_POOL_PREFIX = SPRING_REDIS_PREFIX + ".pool";
-    private static final Integer DEFAULT_MAXACTIVE = 8;
-    private static final Integer DEFAULT_MAXIDLE = 8;
-    private static final Integer DEFAULT_MINIDLE = 0;
-    private static final Integer DEFAULT_MAXWAIT = -1;
-    private static final Integer DEFAULT_TIMEOUT = 0;
-    private int timeOut;
-    private int maxIdle;
-    private int minIdle;
-    private int maxActive;
-    private int maxWait;
+	private RedisProperties redisProperties;
 
-    private RedisProperties redisProperties;
+	@Override
+	public void setEnvironment(Environment environment) {
+		redisProperties = EnvironmentUtils.parseEnvironmentPropertiesToBean(environment, RedisProperties.class, RedisProperties.prefix);
+		Assert.notNull(redisProperties, "Slime redis client configuration properties must not be null!");
+	}
 
-    @Override
-    public void setEnvironment(Environment environment) {
-        String timeOutStr = environment.getProperty(SPRING_REDIS_PREFIX + ".timeout");
-        String maxIdleStr = environment.getProperty(SPRING_REDIS_POOL_PREFIX + ".max-idle");
-        String minIdleStr = environment.getProperty(SPRING_REDIS_POOL_PREFIX + ".min-idle");
-        String maxActiveStr = environment.getProperty(SPRING_REDIS_POOL_PREFIX + ".max-active");
-        String maxWaitStr = environment.getProperty(SPRING_REDIS_POOL_PREFIX + ".max-wait");
-        timeOut = null != timeOutStr ? Integer.valueOf(timeOutStr) : DEFAULT_TIMEOUT;
-        maxIdle = null != maxIdleStr ? Integer.valueOf(maxIdleStr) : DEFAULT_MAXIDLE;
-        minIdle = null != minIdleStr ? Integer.valueOf(minIdleStr) : DEFAULT_MINIDLE;
-        maxActive = null != maxActiveStr ? Integer.valueOf(maxActiveStr) : DEFAULT_MAXACTIVE;
-        maxWait = null != maxWaitStr ? Integer.valueOf(maxWaitStr) : DEFAULT_MAXWAIT;
-    }
+	@Override
+	public void registerBeanDefinitions(AnnotationMetadata annotationMetadata,
+										BeanDefinitionRegistry beanDefinitionRegistry) {
+		registerJedisConnectionFactory(beanDefinitionRegistry);
+	}
 
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata annotationMetadata,
-                                        BeanDefinitionRegistry beanDefinitionRegistry) {
-        registerJedisConnectionFactory(beanDefinitionRegistry);
-        registerDefaultRedisTemplate(beanDefinitionRegistry);
-    }
+	private void registerJedisConnectionFactory(BeanDefinitionRegistry beanDefinitionRegistry) {
+		ConfigurableBeanFactory beanFactory = (ConfigurableBeanFactory) beanDefinitionRegistry;
+		JedisPoolConfig poolConfig = new JedisPoolConfig();
+		poolConfig.setMaxTotal(redisProperties.getPool().getMaxActive());
+		poolConfig.setMaxIdle(redisProperties.getPool().getMaxIdle());
+		poolConfig.setMinIdle(redisProperties.getPool().getMinIdle());
+		poolConfig.setMaxWaitMillis(redisProperties.getPool().getMaxWait());
+		JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
+		jedisConnectionFactory.setPoolConfig(poolConfig);
+		jedisConnectionFactory.setHostName(redisProperties.getHost());
+		jedisConnectionFactory.setPort(redisProperties.getPort());
+		jedisConnectionFactory.setTimeout(redisProperties.getTimeout());
+		jedisConnectionFactory.setPassword(redisProperties.getPassword());
+		jedisConnectionFactory.setUsePool(true);
+		jedisConnectionFactory.setUseSsl(redisProperties.isSsl());
+		beanFactory.registerSingleton("jedisConnectionFactory", jedisConnectionFactory);
+		registerDefaultRedisTemplate(jedisConnectionFactory, beanFactory);
+	}
 
-    private void registerJedisConnectionFactory(BeanDefinitionRegistry beanDefinitionRegistry) {
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setMaxTotal(maxActive);
-        poolConfig.setMaxIdle(maxIdle);
-        poolConfig.setMinIdle(minIdle);
-        poolConfig.setMaxWaitMillis(maxWait);
-        BeanDefinition jedisConnectionFactory = BeanDefinitionBuilder
-                .genericBeanDefinition(JedisConnectionFactory.class)
-                .addConstructorArgValue(poolConfig)
-                .addPropertyValue("timeout", timeOut)
-                .getBeanDefinition();
-        beanDefinitionRegistry.registerBeanDefinition("jedisConnectionFactory", jedisConnectionFactory);
-    }
+	private void registerDefaultRedisTemplate(JedisConnectionFactory jedisConnectionFactory,
+											  ConfigurableBeanFactory beanFactory) {
+		RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(jedisConnectionFactory);
+		redisTemplate.setDefaultSerializer(buildRedisTemplateSerializer());
+		beanFactory.registerSingleton("defaultRedisTemplate", redisTemplate);
+	}
 
-    private void registerDefaultRedisTemplate(BeanDefinitionRegistry beanDefinitionRegistry) {
-        BeanDefinition redisTemplate = BeanDefinitionBuilder
-                .genericBeanDefinition(RedisTemplate.class)
-                .addPropertyValue("defaultSerializer", buildRedisTemplateSerializer())
-                .addPropertyReference("connectionFactory","jedisConnectionFactory")
-                .getBeanDefinition();
-        beanDefinitionRegistry.registerBeanDefinition("defaultRedisTemplate", redisTemplate);
-    }
-
-    private Jackson2JsonRedisSerializer buildRedisTemplateSerializer() {
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        ObjectMapper om = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
-        return jackson2JsonRedisSerializer;
-    }
+	private Jackson2JsonRedisSerializer buildRedisTemplateSerializer() {
+		Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+		ObjectMapper om = new ObjectMapper();
+		om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+		om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+		jackson2JsonRedisSerializer.setObjectMapper(om);
+		return jackson2JsonRedisSerializer;
+	}
 
 }

@@ -38,17 +38,17 @@ public class RedisProperties {
 	/**
 	 * Redis server port.
 	 */
-	private int port = 6379;
+	private Integer port = 6379;
 
 	/**
 	 * Enable SSL.
 	 */
-	private boolean ssl;
+	private Boolean ssl = false;
 
 	/**
 	 * Connection timeout in milliseconds.
 	 */
-	private int timeout;
+	private Integer timeout;
 
 	private org.throwable.redis.configuration.RedisProperties.Pool pool;
 
@@ -56,11 +56,11 @@ public class RedisProperties {
 
 	private org.throwable.redis.configuration.RedisProperties.Cluster cluster;
 
-	public int getDatabase() {
+	public Integer getDatabase() {
 		return this.database;
 	}
 
-	public void setDatabase(int database) {
+	public void setDatabase(Integer database) {
 		this.database = database;
 	}
 
@@ -88,27 +88,27 @@ public class RedisProperties {
 		this.password = password;
 	}
 
-	public int getPort() {
+	public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
-	public boolean isSsl() {
+	public Boolean isSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(boolean ssl) {
+	public void setSsl(Boolean ssl) {
 		this.ssl = ssl;
 	}
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(Integer timeout) {
 		this.timeout = timeout;
 	}
 
-	public int getTimeout() {
+	public Integer getTimeout() {
 		return this.timeout;
 	}
 
@@ -145,56 +145,56 @@ public class RedisProperties {
 		 * Max number of "idle" connections in the pool. Use a negative value to indicate
 		 * an unlimited number of idle connections.
 		 */
-		private int maxIdle = 8;
+		private Integer maxIdle = 8;
 
 		/**
-		 * Target for the minimum number of idle connections to maintain in the pool. This
+		 * Target for the minimum number of idle connections to maIntegerain in the pool. This
 		 * setting only has an effect if it is positive.
 		 */
-		private int minIdle = 0;
+		private Integer minIdle = 0;
 
 		/**
 		 * Max number of connections that can be allocated by the pool at a given time.
 		 * Use a negative value for no limit.
 		 */
-		private int maxActive = 8;
+		private Integer maxActive = 8;
 
 		/**
 		 * Maximum amount of time (in milliseconds) a connection allocation should block
 		 * before throwing an exception when the pool is exhausted. Use a negative value
 		 * to block indefinitely.
 		 */
-		private int maxWait = -1;
+		private Integer maxWait = -1;
 
-		public int getMaxIdle() {
+		public Integer getMaxIdle() {
 			return this.maxIdle;
 		}
 
-		public void setMaxIdle(int maxIdle) {
+		public void setMaxIdle(Integer maxIdle) {
 			this.maxIdle = maxIdle;
 		}
 
-		public int getMinIdle() {
+		public Integer getMinIdle() {
 			return this.minIdle;
 		}
 
-		public void setMinIdle(int minIdle) {
+		public void setMinIdle(Integer minIdle) {
 			this.minIdle = minIdle;
 		}
 
-		public int getMaxActive() {
+		public Integer getMaxActive() {
 			return this.maxActive;
 		}
 
-		public void setMaxActive(int maxActive) {
+		public void setMaxActive(Integer maxActive) {
 			this.maxActive = maxActive;
 		}
 
-		public int getMaxWait() {
+		public Integer getMaxWait() {
 			return this.maxWait;
 		}
 
-		public void setMaxWait(int maxWait) {
+		public void setMaxWait(Integer maxWait) {
 			this.maxWait = maxWait;
 		}
 
