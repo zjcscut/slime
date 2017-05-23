@@ -1,0 +1,59 @@
+{
+  "groups": [
+    {
+      "name": "slime.redis",
+      "type": "org.throwable.redis.configuration.RedisProperties",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties"
+    },
+    {
+      "name": "slime.redis.cluster",
+      "type": "org.throwable.redis.configuration.RedisProperties$Cluster",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties",
+      "sourceMethod": "getCluster()"
+    },
+    {
+      "name": "slime.redis.pool",
+      "type": "org.throwable.redis.configuration.RedisProperties$Pool",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties",
+      "sourceMethod": "getPool()"
+    },
+    {
+      "name": "slime.redis.sentinel",
+      "type": "org.throwable.redis.configuration.RedisProperties$Sentinel",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties",
+      "sourceMethod": "getSentinel()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "slime.redis.url",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties"
+    },
+    {
+      "name": "slime.redis.host",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties"
+    },
+    {
+      "name": "slime.redis.password",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties"
+    },
+    {
+      "name": "slime.redis.port",
+      "type": "java.lang.Integer",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties"
+    },
+    {
+      "name": "slime.redis.ssl",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties"
+    },
+    {
+      "name": "slime.redis.timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "org.throwable.redis.configuration.RedisProperties"
+    }
+  ]
+}

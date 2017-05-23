@@ -7,13 +7,13 @@ import java.util.List;
 /**
  * @author throwable
  * @version v1.0
- * @description copy from {@link org.springframework.boot.autoconfigure.data.redis.RedisProperties}
+ * @description copy from {@link org.throwable.redis.configuration.RedisProperties}
  * @since 2017/5/23 2:00
  */
 @ConfigurationProperties(prefix = RedisProperties.prefix)
 public class RedisProperties {
 
-	public static final String prefix = "slime.nosql.redis";
+	public static final String prefix = "slime.redis";
 
 	/**
 	 * Database index used by the connection factory.
@@ -50,11 +50,11 @@ public class RedisProperties {
 	 */
 	private int timeout;
 
-	private org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool pool;
+	private org.throwable.redis.configuration.RedisProperties.Pool pool;
 
-	private org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel sentinel;
+	private org.throwable.redis.configuration.RedisProperties.Sentinel sentinel;
 
-	private org.springframework.boot.autoconfigure.data.redis.RedisProperties.Cluster cluster;
+	private org.throwable.redis.configuration.RedisProperties.Cluster cluster;
 
 	public int getDatabase() {
 		return this.database;
@@ -112,27 +112,27 @@ public class RedisProperties {
 		return this.timeout;
 	}
 
-	public org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel getSentinel() {
+	public org.throwable.redis.configuration.RedisProperties.Sentinel getSentinel() {
 		return this.sentinel;
 	}
 
-	public void setSentinel(org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel sentinel) {
+	public void setSentinel(org.throwable.redis.configuration.RedisProperties.Sentinel sentinel) {
 		this.sentinel = sentinel;
 	}
 
-	public org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool getPool() {
+	public org.throwable.redis.configuration.RedisProperties.Pool getPool() {
 		return this.pool;
 	}
 
-	public void setPool(org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool pool) {
+	public void setPool(org.throwable.redis.configuration.RedisProperties.Pool pool) {
 		this.pool = pool;
 	}
 
-	public org.springframework.boot.autoconfigure.data.redis.RedisProperties.Cluster getCluster() {
+	public org.throwable.redis.configuration.RedisProperties.Cluster getCluster() {
 		return this.cluster;
 	}
 
-	public void setCluster(org.springframework.boot.autoconfigure.data.redis.RedisProperties.Cluster cluster) {
+	public void setCluster(org.throwable.redis.configuration.RedisProperties.Cluster cluster) {
 		this.cluster = cluster;
 	}
 

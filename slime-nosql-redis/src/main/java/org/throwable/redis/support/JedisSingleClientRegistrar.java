@@ -13,6 +13,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.throwable.redis.configuration.RedisProperties;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
@@ -35,6 +36,8 @@ public class JedisSingleClientRegistrar implements ImportBeanDefinitionRegistrar
     private int minIdle;
     private int maxActive;
     private int maxWait;
+
+    private RedisProperties redisProperties;
 
     @Override
     public void setEnvironment(Environment environment) {

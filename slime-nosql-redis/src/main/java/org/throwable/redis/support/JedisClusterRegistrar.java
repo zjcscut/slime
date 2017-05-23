@@ -8,6 +8,8 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
+import org.throwable.redis.configuration.RedisProperties;
+import org.throwable.utils.EnvironmentUtils;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
@@ -42,8 +44,11 @@ public class JedisClusterRegistrar implements ImportBeanDefinitionRegistrar, Env
 	private int maxActive;
 	private int maxWait;
 
+	private RedisProperties redisProperties;
+
 	@Override
 	public void setEnvironment(Environment environment) {
+		redisProperties = EnvironmentUtils.parseEnvironmentPropertiesToBean(environment,RedisProperties.class,RedisProperties.prefix);
 		int index = 0;
 		Set<String> nodes = new HashSet<>();
 		while (null != environment.getProperty(SPRING_REDIS_CLUSTER_NODES_PREFIX + LEFT_BRACKET + index + RIGHT_BRACKET)) {
