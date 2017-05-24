@@ -130,7 +130,7 @@ public class Listener implements MessageListener {
 	private RabbitTemplate rabbitTemplate;
 	
 	public void service(){
-            SimpleResourceHolder.bind(rabbitTemplate.getConnectionFactory(), "PRODUCER-1");
+         SimpleResourceHolder.bind(rabbitTemplate.getConnectionFactory(), "PRODUCER-1");
 		try {
 			rabbitTemplate.convertAndSend("exchange1", "queue-key-1", "hello world!!!");
 		} finally {

@@ -29,5 +29,17 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.throwable</groupId>
+            <artifactId>slime-nosql-redis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.throwable</groupId>
+            <artifactId>slime-mybatis-mapper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 </project>
