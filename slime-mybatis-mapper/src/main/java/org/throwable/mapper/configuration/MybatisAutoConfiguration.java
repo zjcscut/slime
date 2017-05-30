@@ -136,5 +136,4 @@ public class MybatisAutoConfiguration {
 			return new SqlSessionTemplate(sqlSessionFactory);
 		}
 	}
-
 }

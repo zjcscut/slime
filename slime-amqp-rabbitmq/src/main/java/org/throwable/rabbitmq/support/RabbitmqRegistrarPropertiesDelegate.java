@@ -46,7 +46,7 @@ public class RabbitmqRegistrarPropertiesDelegate extends RabbitmqRegistrarProper
 			instanceHolder.setInstanceSign(bcp.getInstanceSign());
 			instanceHolder.setInstance(bcp);
 			addConsumerInstance(bcp.getInstanceSign(), instanceHolder);
-			addConsumerBindingParameter(bcp.getInstanceSign(), bcp.getConsumerBindingParameters());
+			addConsumerBindingParameters(bcp.getInstanceSign(), bcp.getConsumerBindingParameters());
 		}
 	}
 
@@ -56,7 +56,7 @@ public class RabbitmqRegistrarPropertiesDelegate extends RabbitmqRegistrarProper
 			instanceHolder.setInstanceSign(bpp.getInstanceSign());
 			instanceHolder.setInstance(bpp);
 			addProducerInstance(bpp.getInstanceSign(), instanceHolder);
-			addProducerBindingParameter(bpp.getInstanceSign(), bpp.getBindingParameters());
+			addProducerBindingParameters(bpp.getInstanceSign(), bpp.getBindingParameters());
 		}
 	}
 

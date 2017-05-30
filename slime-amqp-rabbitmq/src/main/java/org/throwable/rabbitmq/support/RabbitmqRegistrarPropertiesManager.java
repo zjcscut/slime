@@ -4,6 +4,8 @@ import org.springframework.util.Assert;
 import org.throwable.rabbitmq.configuration.BindingParameter;
 import org.throwable.rabbitmq.configuration.ConsumerBindingParameter;
 import org.throwable.rabbitmq.exception.RabbitmqInstanceCreationException;
+import org.throwable.rabbitmq.exception.RabbitmqRegisterException;
+import org.throwable.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * @author throwable
@@ -61,7 +64,6 @@ public abstract class RabbitmqRegistrarPropertiesManager {
 	 * value: List BindingParameter
 	 */
 	private static final ConcurrentMap<String, List<BindingParameter>> bindingParameters = new ConcurrentHashMap<>();
-
 
 	protected static boolean addProducerInstance(String instanceSign, InstanceHolder instanceHolder) {
 		return addInstance(instanceSign, instanceHolder, producerInstances);
@@ -192,35 +194,43 @@ public abstract class RabbitmqRegistrarPropertiesManager {
 		return getInstanceSign(instanceHolder);
 	}
 
-	protected static boolean addProducerBindingParameter(String instanceSign, List<BindingParameter> bindingParameters) {
-		checkProducerBindingParameters(bindingParameters);
+	protected static boolean addProducerBindingParameters(String instanceSign, List<BindingParameter> bindingParameters) {
+		checkProducerBindingParameters(instanceSign, bindingParameters);
 		return null != producerBindingParameters.put(instanceSign, bindingParameters);
 	}
 
-	private static void checkProducerBindingParameters(List<BindingParameter> bindingParameters) {
-		bindingParameters.forEach(p -> {
-			Assert.hasText(p.getQueueName(), "Producer queue name must not be empty");
-		});
+	private static void checkProducerBindingParameters(String instanceSign, List<BindingParameter> bindingParameters) {
+		bindingParameters.forEach(p -> Assert.hasText(p.getQueueName(), "Producer queue name must not be empty"));
+		List<String> queues = bindingParameters.stream().map(BindingParameter::getQueueName).collect(Collectors.toList());
+		List<String> duplicatedQueueNames = ArrayUtils.getDuplicatedElements(queues);
+		if (null != queues && !duplicatedQueueNames.isEmpty()) {
+			throw new RabbitmqRegisterException(String.format("Producer queues %s of instance [%s] has been defined!Please check your configuration.", duplicatedQueueNames, instanceSign));
+		}
 	}
 
-	public static List<BindingParameter> getProducerBindingParameter(String instanceSign) {
+	public static List<BindingParameter> getProducerBindingParameters(String instanceSign) {
 		return Collections.unmodifiableList(producerBindingParameters.get(instanceSign));
 	}
 
-	protected static boolean addConsumerBindingParameter(String instanceSign, List<ConsumerBindingParameter> bindingParameters) {
-		checkConsumerBindingParameters(bindingParameters);
+	protected static boolean addConsumerBindingParameters(String instanceSign, List<ConsumerBindingParameter> bindingParameters) {
+		checkConsumerBindingParameters(instanceSign, bindingParameters);
 		return null != consumerBindingParameters.put(instanceSign, bindingParameters);
 	}
 
-	public static List<ConsumerBindingParameter> getConsumerBindingParameter(String instanceSign) {
+	public static List<ConsumerBindingParameter> getConsumerBindingParameters(String instanceSign) {
 		return Collections.unmodifiableList(consumerBindingParameters.get(instanceSign));
 	}
 
-	private static void checkConsumerBindingParameters(List<ConsumerBindingParameter> bindingParameters) {
+	private static void checkConsumerBindingParameters(String instanceSign, List<ConsumerBindingParameter> bindingParameters) {
 		bindingParameters.forEach(p -> {
 			Assert.hasText(p.getListenerClassName(), "Listener class name must not be empty");
 			Assert.hasText(p.getQueueName(), "Listener queue name must not be empty");
 		});
+		List<String> queues = bindingParameters.stream().map(BindingParameter::getQueueName).collect(Collectors.toList());
+        List<String> duplicatedQueueNames = ArrayUtils.getDuplicatedElements(queues);
+		if (null != queues && !duplicatedQueueNames.isEmpty()) {
+			throw new RabbitmqRegisterException(String.format("Consumer queues %s of instance [%s] has been defined!Please check your configuration.", duplicatedQueueNames, instanceSign));
+		}
 	}
 
 
