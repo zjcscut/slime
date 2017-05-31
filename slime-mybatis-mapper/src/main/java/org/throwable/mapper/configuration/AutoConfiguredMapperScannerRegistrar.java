@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -43,7 +42,6 @@ public class AutoConfiguredMapperScannerRegistrar implements BeanFactoryAware, I
 
     private MapperProperties properties;
 
-
 	//为了获取mybatis一些基本的配置属性
     @Override
     public void setEnvironment(Environment environment) {
@@ -53,7 +51,6 @@ public class AutoConfiguredMapperScannerRegistrar implements BeanFactoryAware, I
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         log.debug("Scanning mapper interfaces and register them into ioc container");
-
 		ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
         try {
             if (null != this.resourceLoader) {
@@ -102,7 +99,6 @@ public class AutoConfiguredMapperScannerRegistrar implements BeanFactoryAware, I
      * on the same component-scanning path as Spring Boot itself.
      */
     @Configuration
-    @Import({AutoConfiguredMapperScannerRegistrar.class})
     @ConditionalOnMissingBean(MapperFactoryBean.class)
     public static class MapperScannerRegistrarNotFoundConfiguration {
 

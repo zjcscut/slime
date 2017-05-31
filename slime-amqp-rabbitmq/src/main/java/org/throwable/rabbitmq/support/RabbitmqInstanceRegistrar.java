@@ -156,6 +156,8 @@ public class RabbitmqInstanceRegistrar implements ImportBeanDefinitionRegistrar,
 					CachingConnectionFactory.class);
 			List<ConsumerBindingParameter> parameters = entry.getValue();
 			for (ConsumerBindingParameter parameter : parameters) {
+				String listenerClassName = parameter.getListenerClassName();
+				Assert.hasText(listenerClassName, "Rabbitmq listener class name must not be empty." + parameter);
 				SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factory);
 				container.setMessageConverter(contentTypeDelegatingMessageConverter());
 				if (null != parameter.getConcurrentConsumers()) {
@@ -174,8 +176,6 @@ public class RabbitmqInstanceRegistrar implements ImportBeanDefinitionRegistrar,
 					container.setAcknowledgeMode(DEFAULT_ACKNOWLEDGEMODE);
 				}
 				container.setQueueNames(parameter.getQueueName());
-				String listenerClassName = parameter.getListenerClassName();
-				Assert.hasText(listenerClassName, "Rabbitmq listener class name must not be empty," + parameter);
 				try {
 					Class<?> listenerClass = Class.forName(listenerClassName);
 					Object listenerBean = beanFactory.getBean(listenerClass);

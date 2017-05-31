@@ -1,6 +1,7 @@
 package org.throwable.rabbitmq.annotation;
 
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 
 import java.lang.annotation.*;
 
@@ -8,20 +9,39 @@ import java.lang.annotation.*;
  * @author throwable
  * @version v1.0
  * @description
- * @since 2017/5/26 9:40
+ * @since 2017/5/28 12:06
  */
-@Target(ElementType.TYPE)
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Documented
+@MessageMapping
 @Repeatable(value = SlimeRabbitListeners.class)
 public @interface SlimeRabbitListener {
 
-    String instanceSign();
+	/**
+	 * mq instance sign
+	 */
+	String instanceSign();
 
-    QueueBinding[] bindings() default {};
+	/**
+	 * queue name array,if this field is defined,you must not to define bindings
+	 */
+	String[] queues() default {};
 
-    int concurrentConsumers() default 1;
+	/**
+	 *  initial number of consumer
+	 */
+	int concurrentConsumers() default 1;
 
-    int maxConcurrentConsumers() default 10;
+	/**
+	 *  max number of consumer
+	 */
+	int maxConcurrentConsumers() default 10;
+
+	/**
+	 * binding parameters
+	 * @see org.springframework.amqp.rabbit.annotation.RabbitListener
+	 */
+	QueueBinding[] bindings() default {};
 
 }

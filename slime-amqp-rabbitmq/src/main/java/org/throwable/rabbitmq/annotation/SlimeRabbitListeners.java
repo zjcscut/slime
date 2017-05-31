@@ -6,12 +6,12 @@ import java.lang.annotation.*;
  * @author throwable
  * @version v1.0
  * @description
- * @since 2017/5/26 9:40
+ * @since 2017/5/28 12:06
  */
-@Target(ElementType.TYPE)
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
+@Target({})
+@Documented
 public @interface SlimeRabbitListeners {
 
-    SlimeRabbitListener[] value();
+	SlimeRabbitListener[] value();
 }
