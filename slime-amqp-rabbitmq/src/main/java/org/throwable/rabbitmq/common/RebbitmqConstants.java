@@ -14,7 +14,7 @@ public interface RebbitmqConstants {
 
 	String DEFAULT_RABBIT_VIRTUAL_HOST = "/";
 
-	String DEFAULT_NAMEKEY_SUBFIX = "#";
+	String DEFAULT_NAMEKEY_SUFFIX = "#";
 
 	String RABBITADMIN_NAME_PREFIX = "rabbitAdmin#";
 

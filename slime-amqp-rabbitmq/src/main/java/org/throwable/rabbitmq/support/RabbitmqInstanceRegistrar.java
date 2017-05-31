@@ -185,7 +185,7 @@ public class RabbitmqInstanceRegistrar implements ImportBeanDefinitionRegistrar,
 				}
 				beanFactory.registerSingleton(
 						RebbitmqConstants.RABBIT_MESSAGE_LISTENER_CONTAINER_NAME_PREFIX + instanceSign
-								+ RebbitmqConstants.DEFAULT_NAMEKEY_SUBFIX + parameter.getQueueName(),
+								+ RebbitmqConstants.DEFAULT_NAMEKEY_SUFFIX + parameter.getQueueName(),
 						container
 				);
 			}
