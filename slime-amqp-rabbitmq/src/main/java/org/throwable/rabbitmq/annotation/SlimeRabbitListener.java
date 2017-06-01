@@ -39,6 +39,11 @@ public @interface SlimeRabbitListener {
 	int maxConcurrentConsumers() default 10;
 
 	/**
+	 * rabbitmq priority
+	 */
+	String priority() default "";
+
+	/**
 	 * binding parameters
 	 * @see org.springframework.amqp.rabbit.annotation.RabbitListener
 	 */

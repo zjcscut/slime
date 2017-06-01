@@ -185,7 +185,7 @@ public class RabbitmqInstanceRegistrar implements ImportBeanDefinitionRegistrar,
 				}
 				beanFactory.registerSingleton(
 						RebbitmqConstants.RABBIT_MESSAGE_LISTENER_CONTAINER_NAME_PREFIX + instanceSign
-								+ RebbitmqConstants.DEFAULT_NAMEKEY_SUFFIX + parameter.getQueueName(),
+								+ RebbitmqConstants.DEFAULT_NAMEKEY_SUFFIX + resolveQueueName(parameter.getQueueName()),
 						container
 				);
 			}
@@ -232,6 +232,10 @@ public class RabbitmqInstanceRegistrar implements ImportBeanDefinitionRegistrar,
 		converter.addDelegate(MediaType.APPLICATION_JSON_VALUE, new Jackson2JsonMessageConverter());
 		converter.addDelegate(MediaType.TEXT_PLAIN_VALUE, new Jackson2JsonMessageConverter());
 		return converter;
+	}
+
+	private String resolveQueueName(String originQueueName){
+		return "[" + originQueueName +"]";
 	}
 
 }

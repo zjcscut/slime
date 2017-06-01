@@ -13,6 +13,7 @@ public class RabbitmqInstanceProperties {
 	protected String password;
 	protected String host;
 	protected Integer port;
+	protected String prefix;
 	protected String virtualHost;
 	protected String instanceSign;
 	protected String description;
@@ -74,5 +75,13 @@ public class RabbitmqInstanceProperties {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
 	}
 }
