@@ -105,9 +105,9 @@ slime:
 
 **WARN:**
 
-* instanceSignature必须保证和host、port绑定并且全局唯一;
-* listenerClassName属性对应的类必须实现**MessageListener**和**ChannelAwareMessageListener**接口其中之一,必须确保此类为Spring容器的Bean(添加**@Component**)
-* 可以使用slime重写过的Listener注解注册消费者
+* instanceSignature必须保证和host、port绑定并且全局唯一。
+* listenerClassName属性对应的类必须实现**MessageListener**和**ChannelAwareMessageListener**接口其中之一,必须确保此类为Spring容器的Bean(添加@Component)。
+* 可以使用slime重写过的Listener注解注册消费者。
 
 一个配置的Listener的例子:
 
@@ -147,7 +147,7 @@ public class SlimeListener {
 
 **WARN：**
 
-* **配置中必须包含@SlimeRabbitListener指定的instanceSignature对应的mq实例，否则会注册失败抛出异常。**
+* **配置文件中必须包含@SlimeRabbitListener指定的instanceSignature对应的mq实例，否则会注册失败抛出异常。**
 * 注解@SlimeRabbitListener和@SlimeRabbitHandler的使用方式和@RabbitListener、@RabbitHandler的使用方式类似，instanceSignature字段是必须字段，用于指定mq实例。
 
 一个Producer的例子:
