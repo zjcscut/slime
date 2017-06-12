@@ -13,9 +13,8 @@ public class RabbitmqInstanceProperties {
 	protected String password;
 	protected String host;
 	protected Integer port;
-	protected String prefix;
 	protected String virtualHost;
-	protected String instanceSign;
+	protected String instanceSignature;
 	protected String description;
 
 	public RabbitmqInstanceProperties() {
@@ -61,12 +60,12 @@ public class RabbitmqInstanceProperties {
 		this.virtualHost = virtualHost;
 	}
 
-	public String getInstanceSign() {
-		return instanceSign;
+	public String getinstanceSignature() {
+		return instanceSignature;
 	}
 
-	public void setInstanceSign(String instanceSign) {
-		this.instanceSign = instanceSign;
+	public void setinstanceSignature(String instanceSignature) {
+		this.instanceSignature = instanceSignature;
 	}
 
 	public String getDescription() {
@@ -77,11 +76,22 @@ public class RabbitmqInstanceProperties {
 		this.description = description;
 	}
 
-	public String getPrefix() {
-		return prefix;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RabbitmqInstanceProperties that = (RabbitmqInstanceProperties) o;
+		if (host != null ? !host.equals(that.host) : that.host != null) return false;
+		if (port != null ? !port.equals(that.port) : that.port != null) return false;
+		return instanceSignature != null ? instanceSignature.equals(that.instanceSignature) : that.instanceSignature == null;
 	}
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
+	@Override
+	public int hashCode() {
+		int result = host != null ? host.hashCode() : 0;
+		result = 31 * result + (port != null ? port.hashCode() : 0);
+		result = 31 * result + (instanceSignature != null ? instanceSignature.hashCode() : 0);
+		return result;
 	}
 }

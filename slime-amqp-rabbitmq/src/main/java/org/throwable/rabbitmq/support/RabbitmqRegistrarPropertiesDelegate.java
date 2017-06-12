@@ -43,20 +43,20 @@ public class RabbitmqRegistrarPropertiesDelegate extends RabbitmqRegistrarProper
     private static void parseConsumerProperties(List<RabbitmqConsumerProperties> consumers) {
         for (RabbitmqConsumerProperties bcp : consumers) {
             InstanceHolder<RabbitmqConsumerInstanceProperties> instanceHolder = new InstanceHolder<>();
-            instanceHolder.setInstanceSign(bcp.getInstanceSign());
+            instanceHolder.setinstanceSignature(bcp.getinstanceSignature());
             instanceHolder.setInstance(bcp);
-            addConsumerInstance(bcp.getInstanceSign(), instanceHolder);
-            addConsumerBindingParameters(bcp.getInstanceSign(), bcp.getPrefix(), bcp.getConsumerBindingParameters());
+            addConsumerInstance(bcp.getinstanceSignature(), instanceHolder);
+            addConsumerBindingParameters(bcp.getinstanceSignature(), bcp.getConsumerBindingParameters());
         }
     }
 
     private static void parseProducerProperties(List<RabbitmqProducerProperties> producers) {
         for (RabbitmqProducerProperties bpp : producers) {
             InstanceHolder<RabbitmqProducerInstanceProperties> instanceHolder = new InstanceHolder<>();
-            instanceHolder.setInstanceSign(bpp.getInstanceSign());
+            instanceHolder.setinstanceSignature(bpp.getinstanceSignature());
             instanceHolder.setInstance(bpp);
-            addProducerInstance(bpp.getInstanceSign(), instanceHolder);
-            addProducerBindingParameters(bpp.getInstanceSign(), bpp.getPrefix(), bpp.getBindingParameters());
+            addProducerInstance(bpp.getinstanceSignature(), instanceHolder);
+            addProducerBindingParameters(bpp.getinstanceSignature(), bpp.getBindingParameters());
         }
     }
 

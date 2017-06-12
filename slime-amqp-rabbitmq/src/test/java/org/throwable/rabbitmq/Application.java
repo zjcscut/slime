@@ -9,7 +9,8 @@ import org.throwable.rabbitmq.annotation.EnableAmqpRabbitmq;
  * @version v1.0
  * @description
  * @since 2017/5/21 21:38
- */@SpringBootApplication
+ */
+@SpringBootApplication
 @EnableAmqpRabbitmq
 public class Application {
 

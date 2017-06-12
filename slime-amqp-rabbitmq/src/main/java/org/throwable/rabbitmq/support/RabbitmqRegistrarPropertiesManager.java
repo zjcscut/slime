@@ -1,6 +1,5 @@
 package org.throwable.rabbitmq.support;
 
-import jodd.util.StringUtil;
 import org.springframework.util.Assert;
 import org.throwable.rabbitmq.configuration.BindingParameter;
 import org.throwable.rabbitmq.configuration.ConsumerBindingParameter;
@@ -8,10 +7,7 @@ import org.throwable.rabbitmq.exception.RabbitmqInstanceCreationException;
 import org.throwable.rabbitmq.exception.RabbitmqRegisterException;
 import org.throwable.utils.ArrayUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -66,36 +62,36 @@ public abstract class RabbitmqRegistrarPropertiesManager {
      */
     private static final ConcurrentMap<String, List<BindingParameter>> bindingParameters = new ConcurrentHashMap<>();
 
-    protected static boolean addProducerInstance(String instanceSign, InstanceHolder instanceHolder) {
-        return addInstance(instanceSign, instanceHolder, producerInstances);
+    protected static boolean addProducerInstance(String instanceSignature, InstanceHolder instanceHolder) {
+        return addInstance(instanceSignature, instanceHolder, producerInstances);
     }
 
     public static Map<String, InstanceHolder> getAllProducerInstances() {
         return Collections.unmodifiableMap(producerInstances);
     }
 
-    public static InstanceHolder getProducerInstance(String instanceSign) {
-        return producerInstances.get(instanceSign);
+    public static InstanceHolder getProducerInstance(String instanceSignature) {
+        return producerInstances.get(instanceSignature);
     }
 
-    protected static boolean addConsumerInstance(String instanceSign, InstanceHolder instanceHolder) {
-        return addInstance(instanceSign, instanceHolder, consumerInstances);
+    protected static boolean addConsumerInstance(String instanceSignature, InstanceHolder instanceHolder) {
+        return addInstance(instanceSignature, instanceHolder, consumerInstances);
     }
 
     public static Map<String, InstanceHolder> getAllConsumerInstances() {
         return Collections.unmodifiableMap(consumerInstances);
     }
 
-    public static InstanceHolder getConsumerInstance(String instanceSign) {
-        return consumerInstances.get(instanceSign);
+    public static InstanceHolder getConsumerInstance(String instanceSignature) {
+        return consumerInstances.get(instanceSignature);
     }
 
     public static Map<String, InstanceHolder> getAllInstances() {
         return Collections.unmodifiableMap(instances);
     }
 
-    public static InstanceHolder getInstance(String instanceSign) {
-        return instances.get(instanceSign);
+    public static InstanceHolder getInstance(String instanceSignature) {
+        return instances.get(instanceSignature);
     }
 
     protected static void mergeProducerAndConsumerInstances() {
@@ -150,20 +146,20 @@ public abstract class RabbitmqRegistrarPropertiesManager {
         return Collections.unmodifiableMap(producerBindingParameters);
     }
 
-    private static boolean addInstance(String instanceSign, InstanceHolder instanceHolder, ConcurrentMap<String, InstanceHolder> instances) {
-        Assert.hasText(instanceSign, "Rabbitmq instance sign must not be empty");
+    private static boolean addInstance(String instanceSignature, InstanceHolder instanceHolder, ConcurrentMap<String, InstanceHolder> instances) {
+        Assert.hasText(instanceSignature, "Rabbitmq instance sign must not be empty");
         Assert.hasText(instanceHolder.getInstance().getHost(), "Rabbitmq instance host must not be empty");
         Assert.notNull(instanceHolder.getInstance().getPort(), "Rabbitmq instance port must not be null");
         Assert.hasText(instanceHolder.getInstance().getUsername(), "Rabbitmq instance username must not be empty");
         Assert.hasText(instanceHolder.getInstance().getPassword(), "Rabbitmq instance password must not be empty");
-        if (null != instances.get(instanceSign)) {
+        if (null != instances.get(instanceSignature)) {
             throw new RabbitmqInstanceCreationException("Instance sign has already been existed!!Please make sure that instance sign must be unique globally");
         }
         if (isInstanceHolderExisted(instanceHolder, instances)) {
             throw new RabbitmqInstanceCreationException(String.format("Instance has already been existed!!Host:%s,port:%s",
                     instanceHolder.getInstance().getHost(), instanceHolder.getInstance().getPort()));
         }
-        return null != instances.put(instanceSign, instanceHolder);
+        return null != instances.put(instanceSignature, instanceHolder);
     }
 
     private static boolean isInstanceHolderExisted(InstanceHolder instanceHolder, ConcurrentMap<String, InstanceHolder> instances) {
@@ -173,11 +169,11 @@ public abstract class RabbitmqRegistrarPropertiesManager {
                         && instance.getInstance().getPort().equals(instanceHolder.getInstance().getPort()));
     }
 
-    private static InstanceHolder getInstanceHolder(String instanceSign) {
-        return instances.get(instanceSign);
+    private static InstanceHolder getInstanceHolder(String instanceSignature) {
+        return instances.get(instanceSignature);
     }
 
-    private static String getInstanceSign(InstanceHolder instanceHolder) {
+    private static String getinstanceSignature(InstanceHolder instanceHolder) {
         for (Map.Entry<String, InstanceHolder> entry : instances.entrySet()) {
             InstanceHolder holder = entry.getValue();
             if (holder.getInstance().getHost().equals(instanceHolder.getInstance().getHost())
@@ -188,60 +184,66 @@ public abstract class RabbitmqRegistrarPropertiesManager {
         return null;
     }
 
-    private static String getInstanceSign(String host, Integer port) {
+    private static String getinstanceSignature(String host, Integer port) {
         InstanceHolder instanceHolder = new InstanceHolder();
         instanceHolder.getInstance().setHost(host);
         instanceHolder.getInstance().setPort(port);
-        return getInstanceSign(instanceHolder);
+        return getinstanceSignature(instanceHolder);
     }
 
-    protected static boolean addProducerBindingParameters(String instanceSign, String prefix, List<BindingParameter> bindingParameters) {
-        checkProducerBindingParameters(instanceSign, bindingParameters);
-        bindingParameters.forEach(param -> {
-            if (StringUtil.isNotBlank(prefix)) {
-                param.setQueueName(param.getQueueName() + prefix);
-            }
-        });
-        return null != producerBindingParameters.put(instanceSign, bindingParameters);
+    protected static boolean addProducerBindingParameters(String instanceSignature, List<BindingParameter> bindingParameters) {
+        checkProducerBindingParameters(instanceSignature, bindingParameters);
+        return null != producerBindingParameters.put(instanceSignature, bindingParameters);
     }
 
-    private static void checkProducerBindingParameters(String instanceSign, List<BindingParameter> bindingParameters) {
+    private static void checkProducerBindingParameters(String instanceSignature, List<BindingParameter> bindingParameters) {
         bindingParameters.forEach(p -> Assert.hasText(p.getQueueName(), "Producer queue name must not be empty"));
         List<String> queues = bindingParameters.stream().map(BindingParameter::getQueueName).collect(Collectors.toList());
         List<String> duplicatedQueueNames = ArrayUtils.getDuplicatedElements(queues);
         if (null != queues && !duplicatedQueueNames.isEmpty()) {
-            throw new RabbitmqRegisterException(String.format("Producer queues %s of instance [%s] has been defined!Please check your configuration.", duplicatedQueueNames, instanceSign));
+            throw new RabbitmqRegisterException(String.format("Producer queues %s of instance [%s] has been defined!Please check your configuration.", duplicatedQueueNames, instanceSignature));
         }
     }
 
-    public static List<BindingParameter> getProducerBindingParameters(String instanceSign) {
-        return Collections.unmodifiableList(producerBindingParameters.get(instanceSign));
+    public static List<BindingParameter> getProducerBindingParameters(String instanceSignature) {
+        return Collections.unmodifiableList(producerBindingParameters.get(instanceSignature));
     }
 
-    protected static boolean addConsumerBindingParameters(String instanceSign, String prefix, List<ConsumerBindingParameter> bindingParameters) {
-        checkConsumerBindingParameters(instanceSign, bindingParameters);
-        bindingParameters.forEach(param -> {
-            if (StringUtil.isNotBlank(prefix)) {
-                param.setQueueName(param.getQueueName() + prefix);
-            }
-        });
-        return null != consumerBindingParameters.put(instanceSign, bindingParameters);
+    protected static boolean addConsumerBindingParameters(String instanceSignature, List<ConsumerBindingParameter> bindingParameters) {
+        checkConsumerBindingParameters(instanceSignature, bindingParameters);
+        return null != consumerBindingParameters.put(instanceSignature, bindingParameters);
     }
 
-    public static List<ConsumerBindingParameter> getConsumerBindingParameters(String instanceSign) {
-        return Collections.unmodifiableList(consumerBindingParameters.get(instanceSign));
+    public static void addConsumerBindingParameter(String instanceSignature, ConsumerBindingParameter bindingParameter) {
+        Assert.notNull(instances.get(instanceSignature), String.format("Rabbitmq instance of instanceSignature [%s] must not be null!", instanceSignature));
+        List<ConsumerBindingParameter> parameters = consumerBindingParameters.get(instanceSignature);
+        if (null == parameters || parameters.isEmpty()) {
+            parameters = new ArrayList<>();
+            parameters.add(bindingParameter);
+        } else {
+            parameters.add(bindingParameter);
+        }
+        checkConsumerBindingParameters(instanceSignature, parameters);
     }
 
-    private static void checkConsumerBindingParameters(String instanceSign, List<ConsumerBindingParameter> bindingParameters) {
+    public static List<ConsumerBindingParameter> getConsumerBindingParameters(String instanceSignature) {
+        return Collections.unmodifiableList(consumerBindingParameters.get(instanceSignature));
+    }
+
+    private static void checkConsumerBindingParameters(String instanceSignature, List<ConsumerBindingParameter> bindingParameters) {
         bindingParameters.forEach(p -> {
             Assert.hasText(p.getListenerClassName(), "Listener class name must not be empty");
             Assert.hasText(p.getQueueName(), "Listener queue name must not be empty");
         });
-        List<String> queues = bindingParameters.stream().map(BindingParameter::getQueueName).collect(Collectors.toList());
-        List<String> duplicatedQueueNames = ArrayUtils.getDuplicatedElements(queues);
-        if (null != queues && !duplicatedQueueNames.isEmpty()) {
-            throw new RabbitmqRegisterException(String.format("Consumer queues %s of instance [%s] has been defined!Please check your configuration.", duplicatedQueueNames, instanceSign));
-        }
+        Set<ConsumerBindingParameter> filter = new HashSet<>();
+        bindingParameters.forEach(consumerBindingParameter -> {
+            if (filter.contains(consumerBindingParameter)) {
+                throw new RabbitmqRegisterException(String.format("Rabbitmq instance of instanceSignature [%s] has duplicated listener configuration property,className:%s,queue:%s",
+                        instanceSignature, consumerBindingParameter.getListenerClassName(), consumerBindingParameter.getQueueName()));
+            } else {
+                filter.add(consumerBindingParameter);
+            }
+        });
     }
 
 

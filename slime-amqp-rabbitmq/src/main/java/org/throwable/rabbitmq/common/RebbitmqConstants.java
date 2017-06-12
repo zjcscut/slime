@@ -28,7 +28,7 @@ public interface RebbitmqConstants {
 
 	String RABBIT_MESSAGE_LISTENER_CONTAINER_NAME_PREFIX = "simpleMessageListenerContainer#";
 
-	String RABBIT_MESSAGE_LISTENER_CONTAINER_FACTORY_NAME = "rabbitListenerContainerFactory";
+	String RABBIT_MESSAGE_LISTENER_CONTAINER_FACTORY_NAME_PREFIX = "rabbitListenerContainerFactory#";
 
 	String DEFAULT_CHARSET_ENCODING = "UTF-8";
 }

@@ -61,16 +61,6 @@ public class BindingParameter {
 		this.description = description;
 	}
 
-	@Override
-	public String toString() {
-		return "BindingParameter{" +
-				"queueName='" + queueName + '\'' +
-				", exchangeName='" + exchangeName + '\'' +
-				", exchangeType='" + exchangeType + '\'' +
-				", routingKey='" + routingKey + '\'' +
-				", description='" + description + '\'' +
-				'}';
-	}
 
 	@Override
 	public boolean equals(Object obj) {

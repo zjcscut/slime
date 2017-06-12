@@ -19,9 +19,9 @@ import java.lang.annotation.*;
 public @interface SlimeRabbitListener {
 
 	/**
-	 * mq instance sign
+	 * mq instance signature
 	 */
-	String instanceSign();
+	String instanceSignature();
 
 	/**
 	 * queue name array,if this field is defined,you must not to define bindings
