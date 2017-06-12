@@ -2,7 +2,9 @@
 
 #### Slime，史莱姆，一种虚构的生物。十分弱小，为了不被淘汰就必须改变自己，适应环境，时刻进化。
 
-### Warn:整个体系依赖Springboot版本1.5.3.RELEASE
+### Warn:整个体系依赖Springboot版本1.5.3.RELEASE。
+
+### Warn:这个markdown用Typora编写，如果用其他编辑器打开可能会导致布局出现错乱。
 
 ### 安装
 
@@ -11,7 +13,7 @@ git clone https://github.com/zjcscut/slime.git
 maven clean install
 ```
 
-#### slime-amqp-rabbitmq
+### slime-amqp-rabbitmq
 
 **amqp协议下的rabbitmq模块，提供Rabbitmq多实例支持。**
 
@@ -300,6 +302,14 @@ public class LockService {
         Thread.sleep(Integer.MAX_VALUE);
     }
 ```
+
+### slime-mybatis-mapper
+
+mybatis组件，通过接口继承提供无实体基础CRUD操作，通过condition等组建实现无sql拼写操作。
+
+### slime-nosql-redis
+
+redis组建，提供redis单客户端以及集群支持。
 
 #### 未完待续...
 
