@@ -1,14 +1,9 @@
 package org.throwable.mapper.support.assist;
 
 import org.throwable.mapper.common.entity.EntityColumn;
-import org.throwable.mapper.exception.UnsupportedElementException;
 import org.throwable.mapper.support.filter.FieldFilter;
 
-import java.util.Optional;
 import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
-import static org.throwable.mapper.common.constant.CommonConstants.PARAM_DEFAULT;
 
 /**
  * @author throwable
