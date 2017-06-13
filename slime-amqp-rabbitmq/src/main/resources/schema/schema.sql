@@ -1,0 +1,20 @@
+CREATE TABLE `TB_AT_RABBITMQ_INSTANCE` (
+  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `INSTANCE_SIGNATURE` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例签名',
+  `USERNAME` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
+  `PASSWORD` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
+  `HOST` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'localhost',
+  `PORT` int(11) DEFAULT '5672',
+  `VIRTUAL_HOST` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '/',
+  `DESCRIPTION` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `USE_CONFIRM_CALLBACK` tinyint(1) DEFAULT 0,
+  `MANDATORY` tinyint(1) DEFAULT 0,
+  `USE_RETURN_CALLBACK` tinyint(1) DEFAULT 0,
+  `INSTANCE_TYPE` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `IS_ENABLED` tinyint(4) DEFAULT 1,
+  `CREATE_TIME` datetime DEFAULT CURRENT_TIMESTAMP(),
+  `UPDATE_TIME` datetime DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `UNIQUE_INSTANCE` (`INSTANCE_SIGNATURE`,`HOST`,`PORT`,`INSTANCE_TYPE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

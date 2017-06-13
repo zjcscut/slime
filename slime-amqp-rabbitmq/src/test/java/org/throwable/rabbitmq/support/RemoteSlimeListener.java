@@ -14,14 +14,14 @@ import org.throwable.rabbitmq.annotation.SlimeRabbitListener;
  * @since 2017/6/12 11:21
  */
 @Component
-public class SlimeListener {
+public class RemoteSlimeListener {
 
-    @SlimeRabbitListener(instanceSignature = "CONSUMER-1", bindings =
+    @SlimeRabbitListener(instanceSignature = "REMOTE", bindings =
     @QueueBinding(
             value = @Queue(value = "queue-1", durable = "true"),
             exchange = @Exchange(value = "exchange1", durable = "true")
     ))
     public void onMessage(Message message) {
-        System.out.println("SlimeListener receive message --> " + new String(message.getBody()));
+        System.out.println("RemoteSlimeListener receive message --> " + new String(message.getBody()));
     }
 }

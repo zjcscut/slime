@@ -15,7 +15,7 @@ maven clean install
 
 ### slime-amqp-rabbitmq
 
-**amqp协议下的rabbitmq模块，提供Rabbitmq多实例支持。**
+**amqp协议下的rabbitmq模块，提供Rabbitmq多实例支持，下个版本添加数据库配置支持。**
 
 导入依赖:
 
@@ -87,18 +87,19 @@ slime:
       "port": 5672,
       "virtualHost": "/",
       "description": "本地消费者mq配置",
-      "instanceSignature": "CONSUMER-1",
+      "instanceSignature": "LOCAL",
       "consumerBindingParameters": [
-        {
-          "queueName": "queue-1",
-          "exchangeName": "exchange1",
-          "exchangeType": "DIRECT",
-          "routingKey": "queue-key-1",
-          "description": "Description",
-          "listenerClassName": "org.throwable.rabbitmq.support.Listener",
-          "concurrentConsumers": 10,
-          "maxConcurrentConsumers": 20
-        }
+      ]
+    },
+    {
+      "username": "zjc",
+      "password": "admin",
+      "host": "192.168.56.2",
+      "port": 5672,
+      "virtualHost": "/",
+      "description": "远程消费者mq配置",
+      "instanceSignature": "REMOTE",
+      "consumerBindingParameters": [
       ]
     }
   ]
@@ -111,7 +112,7 @@ slime:
 * listenerClassName属性对应的类必须实现**MessageListener**和**ChannelAwareMessageListener**接口其中之一,必须确保此类为Spring容器的Bean(添加@Component)。
 * 可以使用slime重写过的Listener注解注册消费者。
 
-一个配置的Listener的例子:
+一个json配置的Listener的例子:
 
 ```java
 @Component
@@ -130,19 +131,73 @@ public class Listener implements MessageListener {
 }
 ```
 
+外部配置文件mq.json中必须声明对应的listenerClass全类名:
+
+```json
+"consumers": [
+    {
+      "username": "guest",
+      "password": "guest",
+      "host": "localhost",
+      "port": 5672,
+      "virtualHost": "/",
+      "description": "本地消费者mq配置",
+      "instanceSignature": "LOCAL",
+      "consumerBindingParameters": [
+        {
+          "queueName": "queue-1",
+          "exchangeName": "exchange1",
+          "exchangeType": "DIRECT",
+          "routingKey": "queue-key-1",
+          "description": "Description",
+          "listenerClassName": "org.throwable.rabbitmq.support.Listener",
+          "concurrentConsumers": 10,
+          "maxConcurrentConsumers": 20
+        }
+      ]
+    },
+    {
+      "username": "zjc",
+      "password": "admin",
+      "host": "192.168.56.2",
+      "port": 5672,
+      "virtualHost": "/",
+      "description": "远程消费者mq配置",
+      "instanceSignature": "REMOTE",
+      "consumerBindingParameters": [
+      ]
+    }
+  ]
+```
+
 一个通过注解配置的Listener的例子:
 
 ```java
 @Component
-public class SlimeListener {
+public class LocalSlimeListener {
 
-    @SlimeRabbitListener(instanceSignature = "CONSUMER-1", bindings =
+    @SlimeRabbitListener(instanceSignature = "LOCAL", bindings =
     @QueueBinding(
             value = @Queue(value = "queue-1", durable = "true"),
             exchange = @Exchange(value = "exchange1", durable = "true")
     ))
     public void onMessage(Message message) {
-        System.out.println("SlimeListener receive message --> " + newString(message.getBody()));
+        System.out.println("LocalSlimeListener receive message --> " + newString(message.getBody()));
+    }
+}
+```
+
+```json
+@Component
+public class RemoteSlimeListener {
+
+    @SlimeRabbitListener(instanceSignature = "REMOTE", bindings =
+    @QueueBinding(
+            value = @Queue(value = "queue-1", durable = "true"),
+            exchange = @Exchange(value = "exchange1", durable = "true")
+    ))
+    public void onMessage(Message message) {
+        System.out.println("RemoteSlimeListener receive message --> " + new String(message.getBody()));
     }
 }
 ```
@@ -190,7 +245,7 @@ public class SlimeListener {
 
 ### slime-distributed-lock
 
-**基于Zookeeper和Redisson实现分布式锁。**
+**基于Zookeeper和Redisson实现分布式锁，下个版本会拆分为两个部分。**
 
 导入maven依赖:
 
@@ -305,11 +360,58 @@ public class LockService {
 
 ### slime-mybatis-mapper
 
-mybatis组件，通过接口继承提供无实体基础CRUD操作，通过condition等组建实现无sql拼写操作。
+**mybatis组件，通过接口继承提供无sql基础CRUD操作，通过condition等组件实现无sql拼写操作。**
+
+添加依赖:
+
+```xml
+        <dependency>
+            <groupId>org.throwable</groupId>
+            <artifactId>slime-mybatis-mapper</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
+
+Springboot主函数添加注解@EnableMybatisMapper
+
+```json
+@SpringBootApplication
+@EnableMybatisMapper
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+}
+```
 
 ### slime-nosql-redis
 
-redis组建，提供redis单客户端以及集群支持。
+**redis组件，提供redis单客户端以及集群支持。**
+
+添加依赖:
+
+```xml
+        <dependency>
+            <groupId>org.throwable</groupId>
+            <artifactId>slime-mybatis-mapper</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
+
+Springboot主函数添加注解@EnableRedisClient或者@EnableRedisCluster
+
+```java
+@SpringBootApplication
+//@EnableRedisCluster
+@EnableRedisClient
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+}
+```
 
 #### 未完待续...
 

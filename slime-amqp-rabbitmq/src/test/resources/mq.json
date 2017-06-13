@@ -30,18 +30,19 @@
       "port": 5672,
       "virtualHost": "/",
       "description": "本地消费者mq配置",
-      "instanceSignature": "CONSUMER-1",
+      "instanceSignature": "LOCAL",
       "consumerBindingParameters": [
-        {
-          "queueName": "queue-1",
-          "exchangeName": "exchange1",
-          "exchangeType": "DIRECT",
-          "routingKey": "queue-key-1",
-          "description": "Description",
-          "listenerClassName": "org.throwable.rabbitmq.support.Listener",
-          "concurrentConsumers": 10,
-          "maxConcurrentConsumers": 20
-        }
+      ]
+    },
+    {
+      "username": "zjc",
+      "password": "admin",
+      "host": "192.168.56.2",
+      "port": 5672,
+      "virtualHost": "/",
+      "description": "远程消费者mq配置",
+      "instanceSignature": "REMOTE",
+      "consumerBindingParameters": [
       ]
     }
   ]

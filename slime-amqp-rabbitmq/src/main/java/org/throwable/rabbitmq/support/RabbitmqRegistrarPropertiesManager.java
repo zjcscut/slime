@@ -197,11 +197,13 @@ public abstract class RabbitmqRegistrarPropertiesManager {
     }
 
     private static void checkProducerBindingParameters(String instanceSignature, List<BindingParameter> bindingParameters) {
-        bindingParameters.forEach(p -> Assert.hasText(p.getQueueName(), "Producer queue name must not be empty"));
-        List<String> queues = bindingParameters.stream().map(BindingParameter::getQueueName).collect(Collectors.toList());
-        List<String> duplicatedQueueNames = ArrayUtils.getDuplicatedElements(queues);
-        if (null != queues && !duplicatedQueueNames.isEmpty()) {
-            throw new RabbitmqRegisterException(String.format("Producer queues %s of instance [%s] has been defined!Please check your configuration.", duplicatedQueueNames, instanceSignature));
+        if (null != bindingParameters && !bindingParameters.isEmpty()) {
+            bindingParameters.forEach(p -> Assert.hasText(p.getQueueName(), "Producer queue name must not be empty"));
+            List<String> queues = bindingParameters.stream().map(BindingParameter::getQueueName).collect(Collectors.toList());
+            List<String> duplicatedQueueNames = ArrayUtils.getDuplicatedElements(queues);
+            if (null != queues && !duplicatedQueueNames.isEmpty()) {
+                throw new RabbitmqRegisterException(String.format("Producer queues %s of instance [%s] has been defined!Please check your configuration.", duplicatedQueueNames, instanceSignature));
+            }
         }
     }
 
@@ -231,19 +233,21 @@ public abstract class RabbitmqRegistrarPropertiesManager {
     }
 
     private static void checkConsumerBindingParameters(String instanceSignature, List<ConsumerBindingParameter> bindingParameters) {
-        bindingParameters.forEach(p -> {
-            Assert.hasText(p.getListenerClassName(), "Listener class name must not be empty");
-            Assert.hasText(p.getQueueName(), "Listener queue name must not be empty");
-        });
-        Set<ConsumerBindingParameter> filter = new HashSet<>();
-        bindingParameters.forEach(consumerBindingParameter -> {
-            if (filter.contains(consumerBindingParameter)) {
-                throw new RabbitmqRegisterException(String.format("Rabbitmq instance of instanceSignature [%s] has duplicated listener configuration property,className:%s,queue:%s",
-                        instanceSignature, consumerBindingParameter.getListenerClassName(), consumerBindingParameter.getQueueName()));
-            } else {
-                filter.add(consumerBindingParameter);
-            }
-        });
+        if (null != bindingParameters && !bindingParameters.isEmpty()) {
+            bindingParameters.forEach(p -> {
+                Assert.hasText(p.getListenerClassName(), "Listener class name must not be empty");
+                Assert.hasText(p.getQueueName(), "Listener queue name must not be empty");
+            });
+            Set<ConsumerBindingParameter> filter = new HashSet<>();
+            bindingParameters.forEach(consumerBindingParameter -> {
+                if (filter.contains(consumerBindingParameter)) {
+                    throw new RabbitmqRegisterException(String.format("Rabbitmq instance of instanceSignature [%s] has duplicated listener configuration property,className:%s,queue:%s",
+                            instanceSignature, consumerBindingParameter.getListenerClassName(), consumerBindingParameter.getQueueName()));
+                } else {
+                    filter.add(consumerBindingParameter);
+                }
+            });
+        }
     }
 
 
