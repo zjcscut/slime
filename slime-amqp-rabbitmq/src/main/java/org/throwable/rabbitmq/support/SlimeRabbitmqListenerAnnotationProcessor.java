@@ -217,6 +217,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         endpoint.setQueueNames(holder.getQueueNames().toArray(new String[holder.getQueueNames().size()]));
         String containerFactoryName = resolveRabbitListenerContainerFactoryNameSuffix(
                 RebbitmqConstants.RABBIT_MESSAGE_LISTENER_CONTAINER_FACTORY_NAME_PREFIX,
+                instanceSignature,
                 slimeRabbitListener.concurrentConsumers(), slimeRabbitListener.maxConcurrentConsumers());
         if (beanFactory.containsBean(containerFactoryName)) {
             containerFactory = beanFactory.getBean(containerFactoryName, SimpleRabbitListenerContainerFactory.class);
@@ -229,7 +230,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
             containerFactory.setConcurrentConsumers(slimeRabbitListener.concurrentConsumers());
             containerFactory.setMaxConcurrentConsumers(slimeRabbitListener.maxConcurrentConsumers());
             containerFactory.setMessageConverter(contentTypeDelegatingMessageConverter());
-            beanFactory.registerSingleton(containerFactoryName, connectionFactory);
+            beanFactory.registerSingleton(containerFactoryName, containerFactory);
         }
         //这里有个比较蛋疼的问题,registrar里面有的containerFactoryName属性是通过beanFactory拿到RabbitListenerContainerFactory实例,
         //因此必须重复覆写containerFactoryName以确保在registrar拿到自定义注册的RabbitListenerContainerFactory,否则无法写入初始以及最大消费者数量属性
@@ -241,8 +242,8 @@ public class SlimeRabbitmqListenerAnnotationProcessor
                 resolveConsumerBindingParameter(slimeRabbitListener, bean.getClass().getCanonicalName(), holder));
     }
 
-    private String resolveRabbitListenerContainerFactoryNameSuffix(String beanName, int initSize, int maxSize) {
-        return beanName + "[" + initSize + "," + maxSize + "]";
+    private String resolveRabbitListenerContainerFactoryNameSuffix(String beanName, String instanceSignature, int initSize, int maxSize) {
+        return beanName + instanceSignature + "[" + initSize + "," + maxSize + "]";
     }
 
     private String resolveEndpointId(SlimeRabbitListener slimeRabbitListener) {
@@ -256,7 +257,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         if (queues.length > 0 && bindings.length > 0) {
             throw new BeanInitializationException("@SlimeRabbitListener can have 'queues' or 'bindings' but not both");
         }
-        if (queues.length == 0 && bindings.length == 0){
+        if (queues.length == 0 && bindings.length == 0) {
             throw new BeanInitializationException("@SlimeRabbitListener must have 'queues' or 'bindings' but not both");
         }
         List<String> result = new ArrayList<>();
@@ -682,10 +683,10 @@ public class SlimeRabbitmqListenerAnnotationProcessor
 
     private ConsumerBindingParameter resolveConsumerBindingParameter(SlimeRabbitListener slimeRabbitListener, String className, BindingParameterHolder holder) {
         ConsumerBindingParameter consumerBindingParameter = new ConsumerBindingParameter();
-        int nameSize= holder.getQueueNames().size();
-        if (1 == nameSize){
+        int nameSize = holder.getQueueNames().size();
+        if (1 == nameSize) {
             consumerBindingParameter.setQueueName(holder.getQueueNames().get(0));
-        }else {
+        } else {
             consumerBindingParameter.setQueueName(holder.getQueueNames().toString());
         }
         consumerBindingParameter.setAcknowledgeMode("AUTO");

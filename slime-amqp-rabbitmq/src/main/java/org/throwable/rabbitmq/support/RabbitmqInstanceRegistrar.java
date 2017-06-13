@@ -61,10 +61,10 @@ public class RabbitmqInstanceRegistrar implements ImportBeanDefinitionRegistrar,
         registerMultiInstanceRabbitmqComponent(beanFactory);
     }
 
-    private void initAndRegisterRabbitmqProperties(BeanFactory beanFactory) {
+    private void initAndRegisterRabbitmqProperties(ConfigurableBeanFactory beanFactory) {
         Assert.hasText(location, "Amqp rabbitmq configuration location must not be empty");
         SlimeRabbitmqProperties sp = JacksonUtils.parseFromJsonFile(location, SlimeRabbitmqProperties.class);
-        ((ConfigurableBeanFactory) beanFactory).registerSingleton(sp.getClass().getCanonicalName(), sp);
+        beanFactory.registerSingleton(sp.getClass().getCanonicalName(), sp);
         RabbitmqRegistrarPropertiesDelegate.parseSlimeRabbitmqProperties(sp);
     }
 
