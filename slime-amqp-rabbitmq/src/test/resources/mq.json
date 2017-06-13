@@ -32,9 +32,9 @@
       "description": "本地消费者mq配置",
       "instanceSignature": "LOCAL",
       "consumerBindingParameters": [
-
       ]
-    }, {
+    },
+    {
       "username": "zjc",
       "password": "admin",
       "host": "192.168.56.2",
@@ -43,7 +43,6 @@
       "description": "远程消费者mq配置",
       "instanceSignature": "REMOTE",
       "consumerBindingParameters": [
-
       ]
     }
   ]
