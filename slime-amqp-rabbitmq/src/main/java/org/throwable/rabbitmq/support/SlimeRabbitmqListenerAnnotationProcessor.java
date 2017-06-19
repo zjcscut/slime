@@ -1,5 +1,6 @@
 package org.throwable.rabbitmq.support;
 
+import jodd.util.ArraysUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.Argument;
@@ -247,7 +248,8 @@ public class SlimeRabbitmqListenerAnnotationProcessor
     }
 
     private String resolveEndpointId(SlimeRabbitListener slimeRabbitListener) {
-        return "org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#" + this.counter.getAndIncrement();
+        return "org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#"
+				+ ArraysUtil.toString(slimeRabbitListener.queues()) + this.counter.getAndIncrement();
     }
 
     private BindingParameterHolder resolveListenerQueues(SlimeRabbitListener slimeRabbitListener, RabbitAdmin rabbitAdmin) {
@@ -578,7 +580,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
     }
 
     private Map<String, Object> resolveArguments(Argument[] arguments) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         for (Argument arg : arguments) {
             String key = resolveExpressionAsString(arg.name(), "@Argument.name");
             if (StringUtils.hasText(key)) {

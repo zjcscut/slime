@@ -33,17 +33,6 @@
       "instanceSignature": "LOCAL",
       "consumerBindingParameters": [
       ]
-    },
-    {
-      "username": "zjc",
-      "password": "admin",
-      "host": "192.168.56.2",
-      "port": 5672,
-      "virtualHost": "/",
-      "description": "远程消费者mq配置",
-      "instanceSignature": "REMOTE",
-      "consumerBindingParameters": [
-      ]
     }
   ]
 }

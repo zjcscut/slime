@@ -13,7 +13,7 @@ import org.throwable.rabbitmq.annotation.SlimeRabbitListener;
  * @description
  * @since 2017/6/12 11:21
  */
-@Component
+//@Component
 public class RemoteSlimeListener {
 
     @SlimeRabbitListener(instanceSignature = "REMOTE", bindings =
