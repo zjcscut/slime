@@ -691,7 +691,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         if (1 == nameSize) {
             consumerBindingParameter.setQueueName(holder.getQueueNames().get(0));
         } else {
-            consumerBindingParameter.setQueueName(holder.getQueueNames().toString());
+            consumerBindingParameter.setQueueName(ArraysUtil.toString(holder.getQueueNames().toArray(new String[nameSize])));
         }
         consumerBindingParameter.setAcknowledgeMode("AUTO");
         consumerBindingParameter.setConcurrentConsumers(slimeRabbitListener.concurrentConsumers());
