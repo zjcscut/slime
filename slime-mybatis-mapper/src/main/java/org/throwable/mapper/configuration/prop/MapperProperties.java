@@ -120,7 +120,7 @@ public class MapperProperties {
      */
     @SuppressWarnings("unchecked")
     public MapperProperties(Environment env) {
-        String packagesKey = "smart-mapper.base-packages";
+        String packagesKey = "slime.mybatis.mapper.base-packages";
         int index = 0;
         List<String> packages = Lists.newArrayList();
         while (null != env.getProperty(packagesKey + "[" + index + "]")) {
@@ -130,7 +130,7 @@ public class MapperProperties {
         if (packages.size() > 0) {
             basePackages = packages.toArray(new String[packages.size()]);
         }
-        String clazz = env.getProperty("smart-mapper.annotation-class", String.class);
+        String clazz = env.getProperty("slime.mybatis.mapper.annotation-class", String.class);
         if (StringUtil.isNotBlank(clazz)) {
             try {
                 Class<?> annotationClazz = Class.forName(clazz);
@@ -141,7 +141,7 @@ public class MapperProperties {
                 log.error("load annotationClass fail", e);
             }
         }
-        String bean = env.getProperty("smart-mapper.factory-bean", String.class);
+        String bean = env.getProperty("slime.mybatis.mapper.factory-bean", String.class);
         if (StringUtil.isNotBlank(bean)) {
             try {
                 Class<?> beanClazz = Class.forName(bean);
