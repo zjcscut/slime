@@ -216,6 +216,8 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         //#resolveListenerQueues这个方法是声明队列、交互器和绑定的核心方法,因为涉及到多mq实例,为了避免bean冲突,使用各个mq实例的RabbitAdmin进行声明
         BindingParameterHolder holder = resolveListenerQueues(slimeRabbitListener, endpoint.getAdmin());
         endpoint.setQueueNames(holder.getQueueNames().toArray(new String[holder.getQueueNames().size()]));
+        //SimpleRabbitListenerContainerFactory在容器中的beanName为
+		//rabbitListenerContainerFactory#instanceSignature[concurrentConsumers,maxConcurrentConsumers]
         String containerFactoryName = resolveRabbitListenerContainerFactoryNameSuffix(
                 RebbitmqConstants.RABBIT_MESSAGE_LISTENER_CONTAINER_FACTORY_NAME_PREFIX,
                 instanceSignature,
