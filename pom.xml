@@ -4,12 +4,11 @@
     <groupId>org.throwable</groupId>
     <artifactId>slime</artifactId>
     <packaging>pom</packaging>
-    <version>${project.version}</version>
+    <version>1.0-SNAPSHOT</version>
     <modules>
         <module>slime-amqp-rabbitmq</module>
         <module>slime-distributed-lock</module>
         <module>slime-core</module>
-        <module>slime-dependencies</module>
         <module>slime-nosql-redis</module>
         <module>slime-mybatis-mapper</module>
     </modules>
