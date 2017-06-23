@@ -106,6 +106,11 @@ public class RabbitmqInstanceRegistrar implements ImportBeanDefinitionRegistrar,
         factory.setUsername(holder.getInstance().getUsername());
         factory.setPassword(holder.getInstance().getPassword());
         String virtualHost = holder.getInstance().getVirtualHost();
+        if (holder.getInstance() instanceof RabbitmqProducerInstanceProperties){
+            RabbitmqProducerInstanceProperties producerProperties = (RabbitmqProducerInstanceProperties)holder.getInstance();
+            factory.setPublisherConfirms(producerProperties.getUseConfirmCallback());
+            factory.setPublisherReturns(producerProperties.getUseReturnCallback());
+        }
         if (StringUtil.isNotBlank(virtualHost)) {
             factory.setVirtualHost(virtualHost);
         } else {
