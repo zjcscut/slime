@@ -18,7 +18,7 @@ import org.throwable.rabbitmq.configuration.RabbitmqProperties;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
-public class RabbitmqInstanceRegistrarTest {
+public class RabbitInstanceRegistrarTest {
 
 	@Autowired
 	private RabbitmqProperties rabbitmqProperties;

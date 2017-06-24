@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2017/5/21 17:05
  */
 @Slf4j
-public class RabbitmqRegistrarPropertiesDelegate extends RabbitmqRegistrarPropertiesManager {
+class RabbitRegistrarPropertiesDelegate extends RabbitRegistrarPropertiesManager {
 
     private static final Map<Object, String> factoryNames = new ConcurrentHashMap<>();
 

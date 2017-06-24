@@ -1,20 +1,41 @@
-CREATE TABLE `TB_AT_RABBITMQ_INSTANCE` (
-  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `INSTANCE_SIGNATURE` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例签名',
-  `USERNAME` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
-  `PASSWORD` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
-  `HOST` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'localhost',
-  `PORT` int(11) DEFAULT '5672',
-  `VIRTUAL_HOST` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '/',
-  `DESCRIPTION` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `USE_CONFIRM_CALLBACK` tinyint(1) DEFAULT 0,
-  `MANDATORY` tinyint(1) DEFAULT 0,
-  `USE_RETURN_CALLBACK` tinyint(1) DEFAULT 0,
-  `INSTANCE_TYPE` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `IS_ENABLED` tinyint(4) DEFAULT 1,
-  `CREATE_TIME` datetime DEFAULT CURRENT_TIMESTAMP(),
-  `UPDATE_TIME` datetime DEFAULT NULL,
+CREATE TABLE `rabbit_instance` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `instance_signature` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例签名',
+  `username` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
+  `password` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
+  `host` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'localhost',
+  `port` int(11) DEFAULT '5672',
+  `virtualHost` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '/',
+  `description` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `useConfirmCallback` tinyint(1) DEFAULT 0,
+  `mandatory` tinyint(1) DEFAULT 0,
+  `useReturnCallback` tinyint(1) DEFAULT 0,
+  `instanceType` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT 'PRODUCER',
+  `isEnabled` tinyint(4) DEFAULT 1,
+  `createTime` datetime DEFAULT CURRENT_TIMESTAMP(),
+  `updateTime` datetime DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `UNIQUE_INSTANCE` (`INSTANCE_SIGNATURE`,`HOST`,`PORT`,`INSTANCE_TYPE`)
+  UNIQUE KEY `uniq_instance` (`instance_signature`,`instanceType`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `rabbit_binding_parameter` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `instance_signature` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例签名',
+  `queueName` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL ,
+  `exchangeName` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `exchangeType` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL ,
+  `routingKey` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `listenerClassName` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bindingType` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT 'PRODUCER',
+  `concurrentConsumers` INT DEFAULT 1,
+  `maxConcurrentConsumers` INT DEFAULT 10,
+  `acknowledgeMode` VARCHAR(10) DEFAULT 'AUTO',
+  `isEnabled` tinyint(4) DEFAULT 1,
+  `createTime` datetime DEFAULT CURRENT_TIMESTAMP(),
+  `updateTime` datetime DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `uniq_binding_parameter` (`instance_signature`,`bindingType`,`queueName`,`listenerClassName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

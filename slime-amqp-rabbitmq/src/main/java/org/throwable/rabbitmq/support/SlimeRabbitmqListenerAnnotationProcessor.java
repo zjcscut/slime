@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 import org.throwable.rabbitmq.annotation.SlimeRabbitHandler;
 import org.throwable.rabbitmq.annotation.SlimeRabbitListener;
 import org.throwable.rabbitmq.annotation.SlimeRabbitListeners;
-import org.throwable.rabbitmq.common.RebbitmqConstants;
+import org.throwable.rabbitmq.common.constants.RebbitmqConstants;
 import org.throwable.rabbitmq.configuration.ConsumerBindingParameter;
 
 import java.lang.reflect.Method;
@@ -197,7 +197,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
                                  Object target, String beanName) {
         String instanceSignature = slimeRabbitListener.instanceSignature();
         Assert.hasText(instanceSignature, String.format("Listener [%s] instanceSignature must not be empty!", beanName));
-        InstanceHolder instanceHolder = RabbitmqRegistrarPropertiesManager.getConsumerInstance(instanceSignature);
+        InstanceHolder instanceHolder = RabbitRegistrarPropertiesManager.getConsumerInstance(instanceSignature);
         Assert.notNull(instanceHolder, String.format("Rabbitmq instance of Listener [%s] must not be null!", beanName));
         endpoint.setBean(bean);
         endpoint.setMessageHandlerMethodFactory(this.messageHandlerMethodFactory);
@@ -241,7 +241,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         this.registrar.setContainerFactoryBeanName(containerFactoryName);
         this.registrar.registerEndpoint(endpoint, containerFactory);
         //把注册的listener信息写入manager属性缓存
-        RabbitmqRegistrarPropertiesManager.addConsumerBindingParameter(instanceSignature,
+        RabbitRegistrarPropertiesManager.addConsumerBindingParameter(instanceSignature,
                 resolveConsumerBindingParameter(slimeRabbitListener, bean.getClass().getCanonicalName(), holder));
     }
 

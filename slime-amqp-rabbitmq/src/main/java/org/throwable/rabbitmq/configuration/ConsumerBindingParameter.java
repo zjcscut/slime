@@ -8,11 +8,11 @@ package org.throwable.rabbitmq.configuration;
  */
 public class ConsumerBindingParameter extends BindingParameter {
 
-	private String listenerClassName;
-	private Integer concurrentConsumers;
-	private Integer maxConcurrentConsumers;
-	private String acknowledgeMode;
-	private String queueName;
+	protected String listenerClassName;
+	protected Integer concurrentConsumers;
+	protected Integer maxConcurrentConsumers;
+	protected String acknowledgeMode;
+	protected String queueName;
 
 	public ConsumerBindingParameter() {
 	}

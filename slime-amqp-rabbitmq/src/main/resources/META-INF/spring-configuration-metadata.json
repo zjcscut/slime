@@ -9,6 +9,16 @@
       "name": "slime.amqp.rabbitmq.mode",
       "type": "java.lang.String",
       "sourceType": "org.throwable.rabbitmq.configuration.RabbitmqProperties"
+    },
+    {
+      "name": "slime.amqp.rabbitmq.dataSourceBeanName",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.rabbitmq.configuration.RabbitmqProperties"
+    },
+    {
+      "name": "slime.amqp.rabbitmq.skipListenerClassNotFoundException",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.throwable.rabbitmq.configuration.RabbitmqProperties"
     }
   ]
 }

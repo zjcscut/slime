@@ -1,4 +1,4 @@
-package org.throwable.rabbitmq.common;
+package org.throwable.rabbitmq.common.constants;
 
 /**
  * @author throwable
@@ -26,9 +26,13 @@ public interface RebbitmqConstants {
 
 	String RABBIT_TEMPLATE_NAME_PREFIX = "rabbitTemplate";
 
+	String MULTIINSTANCE_RABBIT_TEMPLATE_ADAPTER_NAME_PREFIX = "multiInstanceRabbitTemplateAdapter";
+
 	String RABBIT_MESSAGE_LISTENER_CONTAINER_NAME_PREFIX = "simpleMessageListenerContainer#";
 
 	String RABBIT_MESSAGE_LISTENER_CONTAINER_FACTORY_NAME_PREFIX = "rabbitListenerContainerFactory#";
 
 	String DEFAULT_CHARSET_ENCODING = "UTF-8";
+
+	String RABBITINSTANCE_DATABASE_PROVIDER_NAME_PREFIX = "rabbitInstanceDataBaseProvider";
 }

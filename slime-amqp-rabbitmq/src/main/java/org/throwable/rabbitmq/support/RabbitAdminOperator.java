@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.Assert;
-import org.throwable.rabbitmq.common.ExchangeEnum;
+import org.throwable.rabbitmq.common.constants.ExchangeEnum;
 import org.throwable.rabbitmq.configuration.BindingParameter;
 
 import java.util.ArrayList;

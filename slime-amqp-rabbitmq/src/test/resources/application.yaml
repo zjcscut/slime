@@ -3,3 +3,7 @@ slime:
      rabbitmq:
       location: classpath:mq.json
       mode: json
+spring:
+  datasource:
+    url:
+

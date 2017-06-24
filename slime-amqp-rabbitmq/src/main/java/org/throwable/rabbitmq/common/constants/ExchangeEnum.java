@@ -1,4 +1,4 @@
-package org.throwable.rabbitmq.common;
+package org.throwable.rabbitmq.common.constants;
 
 /**
  * @author throwable

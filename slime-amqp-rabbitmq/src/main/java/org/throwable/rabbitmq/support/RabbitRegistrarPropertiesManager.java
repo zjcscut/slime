@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * @description
  * @since 2017/5/21 15:09
  */
-public abstract class RabbitmqRegistrarPropertiesManager {
+abstract class RabbitRegistrarPropertiesManager {
 
 	/**
 	 * cache rabbitmq instance info
