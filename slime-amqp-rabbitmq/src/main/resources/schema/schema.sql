@@ -7,6 +7,7 @@ CREATE TABLE `rabbit_instance` (
   `port` int(11) DEFAULT '5672',
   `virtualHost` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '/',
   `description` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `suffix` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例下所有的queue、exchange、routingKey的后缀',
   `useConfirmCallback` tinyint(1) DEFAULT 0,
   `mandatory` tinyint(1) DEFAULT 0,
   `useReturnCallback` tinyint(1) DEFAULT 0,

@@ -83,13 +83,14 @@ class RabbitInstanceDataBaseProvider {
 		producer.setHost(instanceEntity.getHost());
 		producer.setPort(instanceEntity.getPort());
 		producer.setVirtualHost(instanceEntity.getVirtualHost());
-		producer.setinstanceSignature(instanceEntity.getinstanceSignature());
+		producer.setInstanceSignature(instanceEntity.getInstanceSignature());
 		producer.setDescription(instanceEntity.getDescription());
+		producer.setSuffix(instanceEntity.getSuffix());
 		List<BindingParameter> bindingParameters = new ArrayList<>();
 		producer.setBindingParameters(bindingParameters);
 		if (null != bindingParameterEntities && !bindingParameterEntities.isEmpty()) {
 			bindingParameterEntities.forEach(bindingParameterEntity -> {
-				if (bindingParameterEntity.getInstanceSignature().equals(instanceEntity.getinstanceSignature())
+				if (bindingParameterEntity.getInstanceSignature().equals(instanceEntity.getInstanceSignature())
 						&& bindingParameterEntity.getBindingType().equals(instanceEntity.getInstanceType())) {
 					BindingParameter bindingParameter = new BindingParameter();
 					BeanUtils.copyProperties(bindingParameterEntity, bindingParameter, PRODUCER_BINDING_PARAMETER_IGNORE_FIELDS);
@@ -109,13 +110,14 @@ class RabbitInstanceDataBaseProvider {
 		consumer.setHost(instanceEntity.getHost());
 		consumer.setPort(instanceEntity.getPort());
 		consumer.setVirtualHost(instanceEntity.getVirtualHost());
-		consumer.setinstanceSignature(instanceEntity.getinstanceSignature());
+		consumer.setInstanceSignature(instanceEntity.getInstanceSignature());
 		consumer.setDescription(instanceEntity.getDescription());
+		consumer.setSuffix(instanceEntity.getSuffix());
 		List<ConsumerBindingParameter> consumerBindingParameters = new ArrayList<>();
 		consumer.setConsumerBindingParameters(consumerBindingParameters);
 		if (null != bindingParameterEntities && !bindingParameterEntities.isEmpty()) {
 			bindingParameterEntities.forEach(bindingParameterEntity -> {
-				if (bindingParameterEntity.getInstanceSignature().equals(instanceEntity.getinstanceSignature())
+				if (bindingParameterEntity.getInstanceSignature().equals(instanceEntity.getInstanceSignature())
 						&& bindingParameterEntity.getBindingType().equals(instanceEntity.getInstanceType())) {
 					ConsumerBindingParameter consumerBindingParameter = new ConsumerBindingParameter();
 					BeanUtils.copyProperties(bindingParameterEntity, consumerBindingParameter, CONSUMER_BINDING_PARAMETER_IGNORE_FIELDS);

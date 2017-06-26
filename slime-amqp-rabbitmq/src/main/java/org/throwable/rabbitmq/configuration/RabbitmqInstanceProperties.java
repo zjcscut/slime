@@ -17,6 +17,9 @@ public class RabbitmqInstanceProperties {
 	protected String instanceSignature;
 	protected String description;
 
+	//queue、exchange、routingKey suffix
+	protected String suffix;
+
 	public RabbitmqInstanceProperties() {
 	}
 
@@ -60,11 +63,11 @@ public class RabbitmqInstanceProperties {
 		this.virtualHost = virtualHost;
 	}
 
-	public String getinstanceSignature() {
+	public String getInstanceSignature() {
 		return instanceSignature;
 	}
 
-	public void setinstanceSignature(String instanceSignature) {
+	public void setInstanceSignature(String instanceSignature) {
 		this.instanceSignature = instanceSignature;
 	}
 
@@ -76,6 +79,13 @@ public class RabbitmqInstanceProperties {
 		this.description = description;
 	}
 
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
 
 	@Override
 	public boolean equals(Object o) {

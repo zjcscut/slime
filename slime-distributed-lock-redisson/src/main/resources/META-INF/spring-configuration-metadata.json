@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "slime.distributed.lock.redisson.location",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.redisson.configuration.RedissonLockProperties"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package org.throwable.rabbitmq.support;
 
+import jodd.util.StringUtil;
 import org.springframework.util.Assert;
 import org.throwable.rabbitmq.configuration.BindingParameter;
 import org.throwable.rabbitmq.configuration.ConsumerBindingParameter;
@@ -191,7 +192,8 @@ abstract class RabbitRegistrarPropertiesManager {
 		return getinstanceSignature(instanceHolder);
 	}
 
-	protected static boolean addProducerBindingParameters(String instanceSignature, List<BindingParameter> bindingParameters) {
+	protected static boolean addProducerBindingParameters(String instanceSignature, String suffix, List<BindingParameter> bindingParameters) {
+		resolveInstanceSuffix(suffix, bindingParameters);
 		checkProducerBindingParameters(instanceSignature, bindingParameters);
 		return null != producerBindingParameters.put(instanceSignature, bindingParameters);
 	}
@@ -211,7 +213,8 @@ abstract class RabbitRegistrarPropertiesManager {
 		return Collections.unmodifiableList(producerBindingParameters.get(instanceSignature));
 	}
 
-	protected static boolean addConsumerBindingParameters(String instanceSignature, List<ConsumerBindingParameter> bindingParameters) {
+	protected static boolean addConsumerBindingParameters(String instanceSignature, String suffix, List<ConsumerBindingParameter> bindingParameters) {
+		resolveInstanceSuffix(suffix, bindingParameters);
 		checkConsumerBindingParameters(instanceSignature, bindingParameters);
 		return null != consumerBindingParameters.put(instanceSignature, bindingParameters);
 	}
@@ -254,5 +257,14 @@ abstract class RabbitRegistrarPropertiesManager {
 		}
 	}
 
+	private static void resolveInstanceSuffix(final String suffix, List<? extends BindingParameter> list) {
+		if (StringUtil.isNotBlank(suffix)) {
+			list.forEach(parameter -> {
+				parameter.setQueueName(parameter.getQueueName() + suffix);
+				parameter.setExchangeName(parameter.getExchangeName() + suffix);
+				parameter.setRoutingKey(parameter.getRoutingKey() + suffix);
+			});
+		}
+	}
 
 }

@@ -17,55 +17,55 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 class RabbitRegistrarPropertiesDelegate extends RabbitRegistrarPropertiesManager {
 
-    private static final Map<Object, String> factoryNames = new ConcurrentHashMap<>();
+	private static final Map<Object, String> factoryNames = new ConcurrentHashMap<>();
 
-    public static void parseSlimeRabbitmqProperties(SlimeRabbitmqProperties sp) {
-        List<RabbitmqProducerProperties> producers = sp.getProducers();
-        if (null == producers || producers.isEmpty()) {
-            if (log.isWarnEnabled()) {
-                log.warn("Slime rabbitmq configuration of producers is empty");
-            }
-        } else {
-            parseProducerProperties(producers);
-        }
-        List<RabbitmqConsumerProperties> consumers = sp.getConsumers();
-        if (null == consumers || consumers.isEmpty()) {
-            if (log.isWarnEnabled()) {
-                log.warn("Slime rabbitmq configuration of consumers is empty");
-            }
-        } else {
-            parseConsumerProperties(consumers);
-        }
-        mergeProducerAndConsumerInstances();
-        mergetProducerAndConsumerBindingParameters();
-    }
+	public static void parseSlimeRabbitmqProperties(SlimeRabbitmqProperties sp) {
+		List<RabbitmqProducerProperties> producers = sp.getProducers();
+		if (null == producers || producers.isEmpty()) {
+			if (log.isWarnEnabled()) {
+				log.warn("Slime rabbitmq configuration of producers is empty");
+			}
+		} else {
+			parseProducerProperties(producers);
+		}
+		List<RabbitmqConsumerProperties> consumers = sp.getConsumers();
+		if (null == consumers || consumers.isEmpty()) {
+			if (log.isWarnEnabled()) {
+				log.warn("Slime rabbitmq configuration of consumers is empty");
+			}
+		} else {
+			parseConsumerProperties(consumers);
+		}
+		mergeProducerAndConsumerInstances();
+		mergetProducerAndConsumerBindingParameters();
+	}
 
-    private static void parseConsumerProperties(List<RabbitmqConsumerProperties> consumers) {
-        for (RabbitmqConsumerProperties bcp : consumers) {
-            InstanceHolder<RabbitmqConsumerInstanceProperties> instanceHolder = new InstanceHolder<>();
-            instanceHolder.setinstanceSignature(bcp.getinstanceSignature());
-            instanceHolder.setInstance(bcp);
-            addConsumerInstance(bcp.getinstanceSignature(), instanceHolder);
-            addConsumerBindingParameters(bcp.getinstanceSignature(), bcp.getConsumerBindingParameters());
-        }
-    }
+	private static void parseConsumerProperties(List<RabbitmqConsumerProperties> consumers) {
+		for (RabbitmqConsumerProperties bcp : consumers) {
+			InstanceHolder<RabbitmqConsumerInstanceProperties> instanceHolder = new InstanceHolder<>();
+			instanceHolder.setinstanceSignature(bcp.getInstanceSignature());
+			instanceHolder.setInstance(bcp);
+			addConsumerInstance(bcp.getInstanceSignature(), instanceHolder);
+			addConsumerBindingParameters(bcp.getInstanceSignature(), bcp.getSuffix(), bcp.getConsumerBindingParameters());
+		}
+	}
 
-    private static void parseProducerProperties(List<RabbitmqProducerProperties> producers) {
-        for (RabbitmqProducerProperties bpp : producers) {
-            InstanceHolder<RabbitmqProducerInstanceProperties> instanceHolder = new InstanceHolder<>();
-            instanceHolder.setinstanceSignature(bpp.getinstanceSignature());
-            instanceHolder.setInstance(bpp);
-            addProducerInstance(bpp.getinstanceSignature(), instanceHolder);
-            addProducerBindingParameters(bpp.getinstanceSignature(), bpp.getBindingParameters());
-        }
-    }
+	private static void parseProducerProperties(List<RabbitmqProducerProperties> producers) {
+		for (RabbitmqProducerProperties bpp : producers) {
+			InstanceHolder<RabbitmqProducerInstanceProperties> instanceHolder = new InstanceHolder<>();
+			instanceHolder.setinstanceSignature(bpp.getInstanceSignature());
+			instanceHolder.setInstance(bpp);
+			addProducerInstance(bpp.getInstanceSignature(), instanceHolder);
+			addProducerBindingParameters(bpp.getInstanceSignature(), bpp.getSuffix(), bpp.getBindingParameters());
+		}
+	}
 
-    public static void cacheRegisteredConnectionFactory(Object key, String name) {
-        factoryNames.put(key, name);
-    }
+	public static void cacheRegisteredConnectionFactory(Object key, String name) {
+		factoryNames.put(key, name);
+	}
 
-    public static Map<Object, String> getConnectionFactoryNames() {
-        return Collections.unmodifiableMap(factoryNames);
-    }
+	public static Map<Object, String> getConnectionFactoryNames() {
+		return Collections.unmodifiableMap(factoryNames);
+	}
 
 }
