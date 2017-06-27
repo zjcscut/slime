@@ -15,7 +15,8 @@ maven clean install
 
 ### slime-amqp-rabbitmq
 
-**amqp协议下的rabbitmq模块，提供Rabbitmq多实例支持，下个版本添加数据库配置支持。**
+**amqp协议下的rabbitmq模块，提供Rabbitmq多实例支持，添加数据库配置支持。**
+基于对[Spring-Amqp源码的分析](https://github.com/zjcscut/Reading-Notes-Repository/blob/master/Spring%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringAmqp%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringAmqp%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md)做了封装和改造。
 
 导入依赖:
 
@@ -394,7 +395,7 @@ public class Application {
 ```xml
         <dependency>
             <groupId>org.throwable</groupId>
-            <artifactId>slime-mybatis-mapper</artifactId>
+            <artifactId>slime-nosql-redis</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 ```
@@ -413,6 +414,30 @@ public class Application {
 }
 ```
 
+### slime-distributed-lock-redisson
+
+**redisson组件，提供基于redisson的分布式锁支持,扩展了注解@RedissonDistributedLock以及模板方法RedissonLockTemplate。**
+
+添加依赖:
+
+```xml
+        <dependency>
+            <groupId>org.throwable</groupId>
+            <artifactId>slime-distributed-lock-redisson</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
+Springboot主函数添加注解@EnableRedissonDistributedLock
+
+```java
+@EnableRedissonDistributedLock
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+}
+```
 #### 未完待续...
 
 
