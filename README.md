@@ -423,7 +423,7 @@ public class Application {
 ```xml
         <dependency>
             <groupId>org.throwable</groupId>
-            <artifactId>slime-nosql-redis</artifactId>
+            <artifactId>slime-distributed-lock-redisson</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 ```
