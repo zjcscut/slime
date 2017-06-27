@@ -395,7 +395,7 @@ public class Application {
 ```xml
         <dependency>
             <groupId>org.throwable</groupId>
-            <artifactId>slime-mybatis-mapper</artifactId>
+            <artifactId>slime-nosql-redis</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 ```
@@ -414,6 +414,30 @@ public class Application {
 }
 ```
 
+### slime-distributed-lock-redisson
+
+**redisson组件，提供基于redisson的分布式锁支持,扩展了注解@RedissonDistributedLock以及模板方法RedissonLockTemplate。**
+
+添加依赖:
+
+```xml
+        <dependency>
+            <groupId>org.throwable</groupId>
+            <artifactId>slime-nosql-redis</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
+Springboot主函数添加注解@EnableRedissonDistributedLock
+
+```java
+@EnableRedissonDistributedLock
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+}
+```
 #### 未完待续...
 
 
