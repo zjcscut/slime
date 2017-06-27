@@ -26,6 +26,7 @@ public class RabbitInstanceRegistrarTest {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
+
 	@Test
 	public void testRegiesterRabbitmqComponent() throws Exception {
 		System.out.println("success");

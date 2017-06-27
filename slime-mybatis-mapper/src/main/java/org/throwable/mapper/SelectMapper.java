@@ -44,6 +44,16 @@ public interface SelectMapper<T> {
 		return new PageModel<>(pager.getPageNumber(), pager.getPageSize(), count, list);
 	}
 
+	default T selectOneByCondition(Condition condition){
+		condition.limit(0, 1);
+		List<T> list =  selectByCondition(condition);
+		if (null == list || list.isEmpty()){
+			return null;
+		}else {
+			return list.get(0);
+		}
+	}
+
 	@SelectProvider(type = SelectMapperProvider.class, method = "dynamicSQL")
 	long countByCondition(@NonNull @Param(PARAM_CONDITION) Condition condition);
 
