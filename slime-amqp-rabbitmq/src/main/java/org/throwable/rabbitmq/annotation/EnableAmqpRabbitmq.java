@@ -3,6 +3,7 @@ package org.throwable.rabbitmq.annotation;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 import org.throwable.rabbitmq.configuration.RabbitmqProperties;
+import org.throwable.rabbitmq.configuration.SlimeRabbitBootstrapConfiguration;
 import org.throwable.rabbitmq.support.RabbitInstanceRegistrar;
 
 import java.lang.annotation.*;
@@ -16,7 +17,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(RabbitInstanceRegistrar.class)
+@Import(value = {RabbitInstanceRegistrar.class, SlimeRabbitBootstrapConfiguration.class})
 @EnableConfigurationProperties(RabbitmqProperties.class)
 public @interface EnableAmqpRabbitmq {
 }

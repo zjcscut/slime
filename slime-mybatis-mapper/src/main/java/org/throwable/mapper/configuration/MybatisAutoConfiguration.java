@@ -103,7 +103,9 @@ public class MybatisAutoConfiguration {
 		if (StringUtils.hasText(this.properties.getConfigLocation())) {
 			factory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
 		}
-		factory.setConfiguration(properties.getConfiguration());
+		if (null != properties.getConfiguration()){
+			factory.setConfiguration(properties.getConfiguration());
+		}
 		if (this.properties.getConfigurationProperties() != null) {
 			factory.setConfigurationProperties(this.properties.getConfigurationProperties());
 		}

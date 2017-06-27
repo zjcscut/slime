@@ -229,7 +229,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
             CachingConnectionFactory connectionFactory = beanFactory.getBean(RebbitmqConstants.RABBIT_CONNECTION_FACTORY_NAME_PREFIX + instanceSignature,
                     CachingConnectionFactory.class);
             containerFactory.setConnectionFactory(connectionFactory);
-            containerFactory.setAcknowledgeMode(AcknowledgeMode.AUTO);  //default auto ack
+            containerFactory.setAcknowledgeMode(AcknowledgeMode.NONE);  //default none
             containerFactory.setConcurrentConsumers(slimeRabbitListener.concurrentConsumers());
             containerFactory.setMaxConcurrentConsumers(slimeRabbitListener.maxConcurrentConsumers());
             containerFactory.setMessageConverter(contentTypeDelegatingMessageConverter());
