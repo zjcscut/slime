@@ -45,7 +45,7 @@ import java.util.Map;
 @Slf4j
 public class RabbitInstanceRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 
-	private static final AcknowledgeMode DEFAULT_ACKNOWLEDGEMODE = AcknowledgeMode.AUTO;
+	private static final AcknowledgeMode DEFAULT_ACKNOWLEDGEMODE = AcknowledgeMode.NONE;
 
 	private static final Integer DEFAULT_CONCURRENTCONSUMERS = 1;
 
@@ -305,13 +305,12 @@ public class RabbitInstanceRegistrar implements ImportBeanDefinitionRegistrar, E
 
 		MultiInstanceRabbitTemplateAdapter rabbitTemplateAdapter = new MultiInstanceRabbitTemplateAdapter();
 		rabbitTemplateAdapter.setBeanFactory(defaultBeanFactory);
-		registerMultiInstanceRabbitTemplates(beanFactory, rabbitTemplateAdapter, confirmCallbackListener, returnCallbackListener);
+		registerMultiInstanceRabbitTemplates(beanFactory, confirmCallbackListener, returnCallbackListener);
 		defaultBeanFactory.registerSingleton(RebbitmqConstants.MULTIINSTANCE_RABBIT_TEMPLATE_ADAPTER_NAME_PREFIX,
 				rabbitTemplateAdapter);
 	}
 
 	private void registerMultiInstanceRabbitTemplates(ConfigurableBeanFactory beanFactory,
-													  MultiInstanceRabbitTemplateAdapter rabbitTemplateAdapter,
 													  RabbitConfirmCallbackListener confirmCallbackListener,
 													  RabbitReturnCallbackListener returnCallbackListener) {
 		Map<Object, String> connectionFactoryNames = RabbitRegistrarPropertiesDelegate.getConnectionFactoryNames();
@@ -331,7 +330,9 @@ public class RabbitInstanceRegistrar implements ImportBeanDefinitionRegistrar, E
 				String rabbitTemplateName = RebbitmqConstants.RABBIT_TEMPLATE_NAME_PREFIX
 						+ RebbitmqConstants.DEFAULT_NAMEKEY_SUFFIX + entry.getKey();
 				beanFactory.registerSingleton(rabbitTemplateName, rabbitTemplate);
-				rabbitTemplateAdapter.addNameHolderPair(entry.getKey().toString(), rabbitTemplateName);
+				beanFactory.getBean(RebbitmqConstants.MULTIINSTANCE_RABBIT_TEMPLATE_ADAPTER_NAME_PREFIX,
+						MultiInstanceRabbitTemplateAdapter.class)
+						.addNameHolderPair(entry.getKey().toString(), rabbitTemplateName);
 			}
 		}
 	}
