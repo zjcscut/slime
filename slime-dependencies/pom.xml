@@ -5,7 +5,7 @@
     <packaging>pom</packaging>
     <name>slime-dependencies</name>
     <groupId>org.throwable</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
     <dependencies>
 
         <dependency>

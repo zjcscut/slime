@@ -222,7 +222,7 @@ abstract class RabbitRegistrarPropertiesManager {
 	public static void addConsumerBindingParameter(String instanceSignature, ConsumerBindingParameter bindingParameter) {
 		Assert.notNull(instances.get(instanceSignature), String.format("Rabbitmq instance of instanceSignature [%s] must not be null!", instanceSignature));
 		List<ConsumerBindingParameter> parameters = consumerBindingParameters.get(instanceSignature);
-		if (null != parameters) {
+		if (null != parameters && !parameters.isEmpty()) {
 			List<ConsumerBindingParameter> destList = new ArrayList<>(parameters.size());
 			Collections.copy(destList, parameters);
 			destList.add(bindingParameter);

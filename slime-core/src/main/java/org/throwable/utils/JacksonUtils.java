@@ -40,6 +40,8 @@ public final class JacksonUtils {
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		//禁止使用int代表Enum的order()來反序列化Enum
 		mapper.disable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS);
+		//不输出null或者空字符串
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 	}
 
 	/**
