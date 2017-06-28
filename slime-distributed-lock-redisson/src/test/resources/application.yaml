@@ -1,0 +1,5 @@
+slime:
+  distributed:
+    lock:
+      redisson:
+        location:

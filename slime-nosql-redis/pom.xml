@@ -29,4 +29,8 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <finalName>slime-nosql-redis</finalName>
+    </build>
 </project>

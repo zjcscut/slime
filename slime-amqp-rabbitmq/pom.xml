@@ -34,4 +34,8 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <finalName>slime-amqp-rabbitmq</finalName>
+    </build>
 </project>

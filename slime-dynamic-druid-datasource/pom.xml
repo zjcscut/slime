@@ -6,33 +6,14 @@
         <version>1.0-RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>slime-mybatis-mapper</artifactId>
+    <artifactId>slime-dynamic-druid-datasource</artifactId>
     <packaging>jar</packaging>
-    <name>slime-mybatis-mapper</name>
+    <name>slime-dynamic-druid-datasource</name>
     <dependencies>
 
         <dependency>
-            <groupId>org.throwable</groupId>
-            <artifactId>slime-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>${mybatis.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>${mybatis.spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>${javax.persistence.version}</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
         </dependency>
 
         <dependency>
@@ -47,9 +28,7 @@
         </dependency>
 
     </dependencies>
-
     <build>
-        <finalName>slime-mybatis-mapper</finalName>
+        <finalName>slime-dynamic-druid-datasource</finalName>
     </build>
-
 </project>

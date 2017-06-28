@@ -43,4 +43,8 @@
 
     </dependencies>
 
+    <build>
+        <finalName>slime-distributed-lock</finalName>
+    </build>
+
 </project>

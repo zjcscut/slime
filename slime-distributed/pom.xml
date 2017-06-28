@@ -17,11 +17,6 @@
             <version>1.0-RELEASE</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
-        
     </dependencies>
     <build>
         <finalName>slime-distributed</finalName>

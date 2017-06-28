@@ -1,19 +1,23 @@
+[TOC]
+
+
+
 # slime
 
-#### Slime，史莱姆，一种虚构的生物。十分弱小，为了不被淘汰就必须改变自己，适应环境，时刻进化。
+**Slime**，史莱姆，一种虚构的生物。十分弱小，为了不被淘汰就必须改变自己，适应环境，时刻进化。
 
-### Warn:整个体系依赖Springboot版本1.5.3.RELEASE。
+**Warn:整个体系依赖Springboot版本1.5.3.RELEASE。**
 
-### Warn:这个markdown用Typora编写，如果用其他编辑器打开可能会导致布局出现错乱。
+**Warn:这个markdown用Typora编写，如果用其他编辑器打开可能会导致布局出现错乱。**
 
-### 安装
+## 安装
 
 ```
 git clone https://github.com/zjcscut/slime.git
-maven clean install
+mvn clean install -Dmaven.test.skip=true
 ```
 
-### slime-amqp-rabbitmq
+## slime-amqp-rabbitmq
 
 **amqp协议下的rabbitmq模块，提供Rabbitmq多实例支持，添加数据库配置支持。**
 基于对[Spring-Amqp源码的分析](https://github.com/zjcscut/Reading-Notes-Repository/blob/master/Spring%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringAmqp%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringAmqp%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md)做了封装和改造。
@@ -24,7 +28,7 @@ maven clean install
        <dependency>
             <groupId>org.throwable</groupId>
             <artifactId>slime-amqp-rabbitmq</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-RELEASE</version>
         </dependency>
 ```
 
@@ -41,7 +45,7 @@ public class Application {
 }
 ```
 
-标准配置:
+### 基于json的标准配置:
 
 application.yaml:
 
@@ -51,9 +55,10 @@ slime:
      rabbitmq:
       location: classpath:mq.json
       mode: json
+      skipListenerClassNotFoundException： true
 ```
 
-外置配置文件mq.json的标准格式:
+外置配置文件**mq.json**的标准格式:
 
 ```json
 {
@@ -93,7 +98,7 @@ slime:
       ]
     },
     {
-      "username": "zjc",
+      "username": "throwable",
       "password": "admin",
       "host": "192.168.56.2",
       "port": 5672,
@@ -109,7 +114,7 @@ slime:
 
 **WARN:**
 
-* instanceSignature必须保证和host、port绑定并且全局唯一。
+* instanceSignature必须全局唯一。
 * listenerClassName属性对应的类必须实现**MessageListener**和**ChannelAwareMessageListener**接口其中之一,必须确保此类为Spring容器的Bean(添加@Component)。
 * 可以使用slime重写过的Listener注解注册消费者。
 
@@ -158,7 +163,7 @@ public class Listener implements MessageListener {
       ]
     },
     {
-      "username": "zjc",
+      "username": "throwable",
       "password": "admin",
       "host": "192.168.56.2",
       "port": 5672,
@@ -171,7 +176,7 @@ public class Listener implements MessageListener {
   ]
 ```
 
-一个通过注解配置的Listener的例子:
+通过注解配置的Listener的例子:
 
 ```java
 @Component
@@ -208,7 +213,7 @@ public class RemoteSlimeListener {
 * **配置文件中必须包含@SlimeRabbitListener指定的instanceSignature对应的mq实例，否则会注册失败抛出异常。**
 * 注解@SlimeRabbitListener和@SlimeRabbitHandler的使用方式和@RabbitListener、@RabbitHandler的使用方式类似，instanceSignature字段是必须字段，用于指定mq实例。
 
-一个Producer的例子:
+Producer的例子:
 
 ```java
     @Autowired
@@ -240,128 +245,113 @@ public class RemoteSlimeListener {
 
    使用的时候:@Autowired @Qualifier("rabbitTemplate#PRODUCER-1") RabbitTemplate rabbitTemplate。
 
-   (上面的创建已经有HardCode的嫌疑,这样的编码很容易会为项目带来灾难,慎用)。
+   (上面的创建已经有HardCode的嫌疑,这样的编码很容易会为项目带来灾难，慎用)。
 
 
+为了避免硬编码带来的危害，可以选用多mq实例RabbitTemplate适配器MultiInstanceRabbitTemplateAdapter,
 
-### slime-distributed-lock
+用法大概如下：
 
-**基于Zookeeper和Redisson实现分布式锁，下个版本会拆分为两个部分。**
+```java
+@Autowired
+private MultiInstanceRabbitTemplateAdapter multiInstanceRabbitTemplateAdapter;
 
-导入maven依赖:
-
-```xml
-       <dependency>
-            <groupId>org.throwable</groupId>
-            <artifactId>slime-distributed-lock</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+public void process(User u){
+   multiInstanceRabbitTemplateAdapter.multiSendJson("your-exchange","your-routingKey",
+      user, "your-mqInstanceSignature");
+}
 ```
 
-application.yaml配置:
+**Warn:** 同理，"your-mqInstanceSignature"必须在配置文件中指定。
+
+为保证producer在发送消息的时候不丢失，slime-amqp-rabbitmq也对Spring-Amqp的消息确认和消息返回做了一定的封装，详细使用看本人写的一篇文章[Spring-Amqp源码的分析](https://github.com/zjcscut/Reading-Notes-Repository/blob/master/Spring%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringAmqp%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringAmqp%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md)的最后一个小节，以及源码中的下面几个类:
+
+* ```
+  AbstractRabbitConfirmCallback
+  ```
+
+* ```
+  RabbitConfirmCallbackListener
+  ```
+
+* ```
+  RabbitReturnCallbackListener
+  ```
+
+**另外，slime-amqp-rabbitmq也提供数据库配置支持。**
+
+### 基于database的标准配置:
+
+application.yaml:
 
 ```yaml
 slime:
-   distrubited:
-        lock:
-          zookeeperConfigurationLocation: classpath:zookeeper.yaml
+   amqp:
+     rabbitmq:
+      mode: database
+      skipListenerClassNotFoundException：true
+      dataSourceBeanName: dataSource
 ```
 
-zookeeper.yaml:
+数据库的schema如下:
 
-```yaml
-zookeeperClientProperties:
-        connectString: 127.0.0.1:2184
-        sessionTimeoutMs: 300000
-        connectionTimeoutMs: 300000
-        baseSleepTimeMs: 5000
-        maxRetries: 3
-        baseLockPath: /zk/lock
+```sql
+CREATE TABLE `rabbit_instance` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `instance_signature` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例签名',
+  `username` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
+  `password` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'guest',
+  `host` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT 'localhost',
+  `port` int(11) DEFAULT '5672',
+  `virtualHost` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '/',
+  `description` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `suffix` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例下所有的queue、exchange、routingKey的后缀',
+  `useConfirmCallback` tinyint(1) DEFAULT 0,
+  `mandatory` tinyint(1) DEFAULT 0,
+  `useReturnCallback` tinyint(1) DEFAULT 0,
+  `instanceType` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT 'PRODUCER',
+  `isEnabled` tinyint(4) DEFAULT 1,
+  `createTime` datetime DEFAULT CURRENT_TIMESTAMP(),
+  `updateTime` datetime DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `uniq_instance` (`instance_signature`,`instanceType`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `rabbit_binding_parameter` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `instance_signature` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实例签名',
+  `queueName` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL ,
+  `exchangeName` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `exchangeType` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL ,
+  `routingKey` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `listenerClassName` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bindingType` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT 'PRODUCER',
+  `concurrentConsumers` INT DEFAULT 1,
+  `maxConcurrentConsumers` INT DEFAULT 10,
+  `acknowledgeMode` VARCHAR(10) DEFAULT 'AUTO',
+  `isEnabled` tinyint(4) DEFAULT 1,
+  `createTime` datetime DEFAULT CURRENT_TIMESTAMP(),
+  `updateTime` datetime DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `uniq_binding_parameter` (`instance_signature`,`bindingType`,`queueName`,`listenerClassName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 ```
 
-Springboot主函数添加@EnableDistributedLock注解:
+WARN:
 
-```java
-@SpringBootApplication
-@EnableDistributedLock
-public class Application {
+* instanceType是枚举，只有PRODUCER和CONSUMER两种选择，如果填写其他会默认使用PRODUCER。
+* bindingType和instanceType的语义是相同的。
+* instanceType和instance_signature是聚合唯一约束。
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-}
-```
+只是外部配置不一样，其他用法是相同的。
 
-实体类:
+## slime-mybatis-mapper
 
-```java
-@Data
-@NoArgsConstructor
-public class User {
-	
-	private Long id;
-	private String name;
-	private String account;
-	private Integer age;
-
-	@Override
-	public String toString() {
-		return "User{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", account='" + account + '\'' +
-				", age=" + age +
-				'}';
-	}
-}
-```
-
-服务类:
-
-```java
-@Service
-@Slf4j
-public class LockService {
-    
-    @DistributedLock(policy = LockPolicyEnum.ZOOKEEPER, target = User.class, keyName =    "account", waitSeconds = 11)
-	public void processTarget(User user) {
-		try {
-			Thread.sleep(1000);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		log.warn("process user :" + user.toString());
-	}
-}
-```
-
-测试类:
-
-```java
-    @Autowired
-    private LockService lockService;
-
-    @Test
-    public void testProcess()throws Exception{
-        final User user = new User();
-        final String name = "throwable";
-        user.setId(10086L);
-        user.setAge(24);
-        user.setName(name);
-        user.setAccount("throwable-10086");
-        List<Thread> threads = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            threads.add(new Thread(() -> lockService.processTarget(user)));
-        }
-        threads.forEach(Thread::start);
-
-        Thread.sleep(Integer.MAX_VALUE);
-    }
-```
-
-### slime-mybatis-mapper
-
-**mybatis组件，通过接口继承提供无sql基础CRUD操作，通过condition等组件实现无sql拼写操作。**
+**mybatis组件，通过接口继承提供无sql基础CRUD操作，通过condition等组件实现无sql拼写操作，这部分的设计参考了[通用mapper](http://git.oschina.net/free/Mapper/)的设计，做了改良和优化。**
 
 添加依赖:
 
@@ -369,11 +359,11 @@ public class LockService {
         <dependency>
             <groupId>org.throwable</groupId>
             <artifactId>slime-mybatis-mapper</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-RELEASE</version>
         </dependency>
 ```
 
-Springboot主函数添加注解@EnableMybatisMapper
+Springboot主函数添加注解**@EnableMybatisMapper:**
 
 ```json
 @SpringBootApplication
@@ -386,7 +376,101 @@ public class Application {
 }
 ```
 
-### slime-nosql-redis
+application.yaml:
+
+```yaml
+slime:
+  mybatis:
+    mapper:
+      mapper-locations: mappings/*.xml
+      type-aliases-package: com.throwable.common.entity
+      base-packages:
+      - com.throwable.dao
+      ognlIdentityStrategy: "\\@java.util.UUID@randomUUID().toString().replace(\"-\", \"\")"
+      configLocation: classpath:mybatis/config.xml
+```
+
+这个模块默认使用javax.sql.DataSource接口的实现作为数据源。
+
+### 实体配置
+
+```java
+@Table(value = "user")
+public class User {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(generator = "JDBC")
+    protected Long id;
+    @Column(name = "creator")
+    protected String creator;
+    @Column(name = "create_date")
+    protected Date createDate;
+    省略getter和setter
+}
+```
+
+* 当 @GeneratedValue指定generator为JDBC将会使用自增策略，请确保数据库主键列支持自增。
+* 当 @GeneratedValue指定generator为UUID将会判断ognlIdentityStrategy是否有效，有效直接使用OGNL写入主键，无效则使用数据库使用数据库的主键回写方言(目前只支持Mysql的SELECT LAST_INSERT_ID()，这一项暂时不允许配置) 。
+* 注意实体使用的jpa注解仅仅在slime-mybatis-mapper的所有api使用时生效，因为原生的mybatis并不是jpa的实现。
+
+### SmartMapper接口
+
+实体的mapper只要继承SmartMapper接口就能继承获得所有基础通用CRUD方法，这个接口提供如下方法：
+
+```java
+int insert(T t);
+int insertNoneSkipPrimaryKey(T t);
+int insertIngore(T t);
+updateByPrimaryKey(T t);
+int updateByPrimaryKey(T t,boolean allowUpdateToNull);
+List<T> selectByConditionLimit(Condition condition, int limit);
+PageModel<T> selectByConditionPage(Condition condition, int pageNumber, int pageSize);
+PageModel<T> selectByConditionPage(Condition condition, Pager pager);
+T selectOneByCondition(Condition condition);
+long countByCondition(Condition condition);
+List<T> selectByCondition(Condition condition);
+```
+
+### Condition组件
+
+Condition组件主要提供无Sql条件拼写，并且和Condition相关的api使用，具体的条件子句有and、gt、or、in、lt等，使用方式如下：
+
+```java
+Condition condition = Condition.create(User.class);
+		condition.gt("id", 1).like("name", "%throwable%").desc("id").or("name", "like", "%z%");
+		List<User> users = userMapper.selectByCondition(condition);
+		assertNotNull(users);
+		for (User u : users) {
+			System.out.println(u);
+		}
+		long count = userMapper.countByCondition(condition);
+		System.out.println(count);
+		PageModel<User> userPage = userMapper.selectByConditionPage(condition, new Pager(1, 10));
+		assertNotNull(userPage);
+```
+
+详细的条件子句和使用方式见Condition的源码，比较简单的。
+
+### 高级接口BatchExecutorService
+
+不需依赖接口继承的实现，提供条件更新，批处理等方法。使用如下:
+
+```java
+@Autowired
+private BatchExecutorService batchExecutorService;
+
+public void batchUpdateUser(List<User> user){
+     //改变值的操作
+  
+     //更新入库,每100条提交一次，跳过null值
+     batchExecutorService.executeBatchUpdate(user,100, true);
+}
+
+```
+
+详细的使用方式见BatchExecutorService的源码，比较简单的。
+
+## slime-nosql-redis
 
 **redis组件，提供redis单客户端以及集群支持。**
 
@@ -396,7 +480,7 @@ public class Application {
         <dependency>
             <groupId>org.throwable</groupId>
             <artifactId>slime-nosql-redis</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-RELEASE</version>
         </dependency>
 ```
 
@@ -414,7 +498,7 @@ public class Application {
 }
 ```
 
-### slime-distributed-lock-redisson
+## slime-distributed-lock-redisson
 
 **redisson组件，提供基于redisson的分布式锁支持,扩展了注解@RedissonDistributedLock以及模板方法RedissonLockTemplate。**
 
@@ -424,7 +508,7 @@ public class Application {
         <dependency>
             <groupId>org.throwable</groupId>
             <artifactId>slime-distributed-lock-redisson</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-RELEASE</version>
         </dependency>
 ```
 Springboot主函数添加注解@EnableRedissonDistributedLock
@@ -438,7 +522,96 @@ public class Application {
 	}
 }
 ```
-#### 未完待续...
+application.yaml:
+
+```yaml
+slime:
+  distributed:
+    lock:
+      redisson:
+        location: redisson/config.yaml
+```
+
+redisson/config.yaml大概如下，详细可以参考redisson的github上的wiki，有详细的配置说明：
+
+```yaml
+---
+singleServerConfig:
+  idleConnectionTimeout: 10000
+  pingTimeout: 1000
+  connectTimeout: 10000
+  timeout: 3000
+  retryAttempts: 3
+  retryInterval: 1500
+  reconnectionTimeout: 3000
+  failedAttempts: 3
+  password: null
+  subscriptionsPerConnection: 5
+  clientName: null
+  address: "redis://127.0.0.1:6379"
+  subscriptionConnectionMinimumIdleSize: 1
+  subscriptionConnectionPoolSize: 50
+  connectionMinimumIdleSize: 10
+  connectionPoolSize: 64
+  database: 0
+  dnsMonitoring: false
+  dnsMonitoringInterval: 5000
+threads: 0
+nettyThreads: 0
+codec: !<org.redisson.codec.JsonJacksonCodec> {}
+useLinuxNativeEpoll: false
+```
+
+@RedissonDistributedLock注解描述如下：
+
+```java
+public @interface RedissonDistributedLock {
+
+    //锁路径前缀
+	String lockPathPrefix() default "REDISSON_LOCK_KEY_";
+    //多个key的分隔符
+	String keySeparator() default "_";
+    //方法入参匹配的属性的属性名
+	String[] keyNames();
+    //锁等待时间
+	long waitTime() default 5000;
+    //锁持有的最大时间
+	long leaseTime() default 15000;
+    //TimeUnit
+	TimeUnit unit() default TimeUnit.MILLISECONDS;
+    //如果存在多个注解，通过此值排序，值越小越先执行
+	int order() default 1;
+    //是否使用公平锁
+	boolean isFair() default false;
+}
+```
+
+RedissonLockTemplate的使用方式:
+
+```java
+@Autowired
+private RedissonLockTemplate redissonLockTemplate;
+
+public void process(User u){
+    String lockPath = "key_" + u.getAccount();
+    redissonLockTemplate.execute(lockPath，waitTime，leaseTime，TimeUnit，new    RedissonLockCallback<T>(){
+            
+           public T doInLock(){
+               //需要加锁的业务逻辑
+               
+               return t;
+           }
+    } );
+}
+```
+
+
+
+## slime-dynamic-druid-datasource
+
+**基于Druid和SpringJdbc实现多数据源动态切换。**
+
+## 未完待续...
 
 
 
