@@ -515,6 +515,7 @@ Springboot主函数添加注解@EnableRedissonDistributedLock
 
 ```java
 @EnableRedissonDistributedLock
+@SpringBootApplication
 public class Application {
 
 	public static void main(String[] args) {
