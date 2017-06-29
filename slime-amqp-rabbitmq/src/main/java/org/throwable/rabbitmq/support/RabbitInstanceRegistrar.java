@@ -305,9 +305,9 @@ public class RabbitInstanceRegistrar implements ImportBeanDefinitionRegistrar, E
 
 		MultiInstanceRabbitTemplateAdapter rabbitTemplateAdapter = new MultiInstanceRabbitTemplateAdapter();
 		rabbitTemplateAdapter.setBeanFactory(defaultBeanFactory);
-		registerMultiInstanceRabbitTemplates(beanFactory, confirmCallbackListener, returnCallbackListener);
 		defaultBeanFactory.registerSingleton(RebbitmqConstants.MULTIINSTANCE_RABBIT_TEMPLATE_ADAPTER_NAME_PREFIX,
 				rabbitTemplateAdapter);
+		registerMultiInstanceRabbitTemplates(beanFactory, confirmCallbackListener, returnCallbackListener);
 	}
 
 	private void registerMultiInstanceRabbitTemplates(ConfigurableBeanFactory beanFactory,
