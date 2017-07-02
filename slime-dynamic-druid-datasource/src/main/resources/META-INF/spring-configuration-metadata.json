@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "slime.druid.location",
+      "type": "java.lang.String",
+      "sourceType": "org.throwable.druid.configuration.SlimeDruidProperties"
+    }
+  ]
+}
