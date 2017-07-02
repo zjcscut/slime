@@ -612,6 +612,213 @@ public void process(User u){
 
 **基于Druid和SpringJdbc实现多数据源动态切换。**
 
+添加依赖:
+
+```xml
+        <dependency>
+            <groupId>org.throwable</groupId>
+            <artifactId>slime-dynamic-druid-datasource</artifactId>
+            <version>1.0-RELEASE</version>
+        </dependency>
+```
+
+Springboot主函数添加注解@EnableDynamicDruidDataSource
+
+```java
+@EnableDynamicDruidDataSource
+@SpringBootApplication
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+}
+```
+
+application.yaml:
+
+```yaml
+slime:
+  druid:
+    location: druid/druid.json
+```
+
+一个标准的外部druid.json的配置大概如下:
+
+```json
+{
+  "druids": [
+    {
+      "signature": "local",
+      "url": "jdbc:mysql://localhost:3306/slime",
+      "username": "root",
+      "password": "root",
+      "driverClassName": "com.mysql.jdbc.Driver",
+      "primary":true
+    },
+    {
+      "signature": "remote",
+      "url": "jdbc:mysql://192.168.56.101:3306/remote",
+      "username": "throwable",
+      "password": "admin",
+      "driverClassName": "com.mysql.jdbc.Driver",
+      "primary":false
+    }
+  ]
+}
+```
+
+* 注意上面的json数组中每个元素一共有6个k-v，这6个属性是必须的，其他属性见下面的属性表。
+* signature是数据源区别的唯一标识，需要全局唯一，在使用注解@AutoDynamicDataSource或者模板方法DynamicDruidTemplate时就是通过signature切换到目标数据源的。
+
+数据源配置的支持参数(更详细见DruidAbstractDataSource):
+
+```java
+private volatile Boolean defaultAutoCommit;
+	private volatile Boolean defaultReadOnly;
+	private volatile Integer defaultTransactionIsolation;
+	private volatile String defaultCatalog;
+	
+	private volatile String username;
+	private volatile String password;
+	private volatile String url;
+	private volatile String driverClassName;
+
+
+	private volatile Integer initialSize;
+	private volatile Integer maxActive;
+	private volatile Integer minIdle;
+	private volatile Integer maxIdle;
+	private volatile Long maxWait;
+	private Integer notFullTimeoutRetryCount;
+
+	private volatile String validationQuery;
+	private volatile Integer validationQueryTimeout;
+	private volatile Boolean testOnBorrow;
+	private volatile Boolean testOnReturn;
+	private volatile Boolean testWhileIdle;
+	private volatile Boolean poolPreparedStatements;
+	private volatile Boolean sharePreparedStatements;
+	private volatile Integer maxPoolPreparedStatementPerConnectionSize;
+
+
+	private volatile Integer queryTimeout;
+	private volatile Integer transactionQueryTimeout;
+
+
+	private Boolean clearFiltersEnable;
+	private volatile Integer maxWaitThreadCount;
+
+	private volatile Boolean accessToUnderlyingConnectionAllowed;
+
+	private volatile Long timeBetweenEvictionRunsMillis;
+
+	private volatile Integer numTestsPerEvictionRun;
+
+	private volatile Long minEvictableIdleTimeMillis;
+	private volatile Long maxEvictableIdleTimeMillis;
+
+	private volatile Long phyTimeoutMillis;
+
+	private volatile Boolean removeAbandoned;
+
+	private volatile Long removeAbandonedTimeoutMillis;
+
+	private volatile Boolean logAbandoned;
+
+	private volatile Integer maxOpenPreparedStatements;
+
+	private volatile String dbType;
+
+	private volatile Long timeBetweenConnectErrorMillis;
+
+	private Integer connectionErrorRetryAttempts;
+
+	private Boolean breakAfterAcquireFailure;
+
+	private Long transactionThresholdMillis;
+
+	private Boolean failFast;
+	private Integer maxCreateTaskCount;
+	private Boolean asyncCloseConnectionEnable;
+	private Boolean initVariants;
+	private Boolean initGlobalVariants;
+
+	private Boolean useUnfairLock;
+
+	private Boolean useLocalSessionState;
+
+	private Long timeBetweenLogStatsMillis;
+	private String exceptionSorter;
+	
+	//filter配置
+	private String filters;
+	private String signature;  //唯一标识,同时作为name属性
+	private Boolean primary; //是否主数据源,只有一个
+```
+
+使用例子:
+
+```java
+@Service
+public class DataSourceService {
+
+	@Autowired
+	private ApplicationContext context;
+
+	@Autowired
+	private DynamicDruidTemplate dynamicDruidTemplate;
+
+	@AutoDynamicDataSource(value = "remote")
+	public void process() throws Exception {
+		System.out.println("process");
+		DataSource dataSource = context.getBean(DataSource.class);
+		Connection connection = dataSource.getConnection();
+		Statement st = connection.createStatement();
+		ResultSet resultSet = st.executeQuery("SELECT 1");
+		while (resultSet.next()) {
+			System.out.println(resultSet.getString(1));
+		}
+		//spring aop代理的局限,自调用是无法命中切点的,@Aspect注解声明的切点没有这个局限
+		context.getBean(DataSourceService.class).process2();
+		context.getBean(DataSourceService.class).process3();
+	}
+
+	@AutoDynamicDataSource(value = "local")
+	public void process2() throws Exception {
+		System.out.println("process2");
+		DataSource dataSource = context.getBean(DataSource.class);
+		Connection connection = dataSource.getConnection();
+		Statement st = connection.createStatement();
+		ResultSet resultSet = st.executeQuery("SELECT 1");
+		while (resultSet.next()) {
+			System.out.println(resultSet.getString(1));
+		}
+	}
+
+	public void process3() throws Exception {
+		System.out.println(dynamicDruidTemplate.execute("local", () -> {
+			System.out.println("process2");
+			DataSource dataSource = context.getBean(DataSource.class);
+			Connection connection;
+			try {
+				connection = dataSource.getConnection();
+				Statement st = connection.createStatement();
+				ResultSet resultSet = st.executeQuery("SELECT 1");
+				while (resultSet.next()) {
+					System.out.println(resultSet.getString(1));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return "process3 success!";
+		}));
+	}
+}
+```
+
+* 值得注意的是，多数据源的事务属于分布式事务的范畴，因此像spring-jdbc包的**DataSourceTransactionManager**已经Hibernate自带的**HibernateTransactionManager**是无法保证多数据源的事务性，更详细的分析请自行搜索分布式事务。
+
 ## 未完待续...
 
 
