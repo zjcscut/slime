@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>slime-distributed-scheduler</artifactId>
+        <groupId>org.throwable</groupId>
+        <version>1.0-RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>slime-distributed-scheduler-core</artifactId>
+    <packaging>jar</packaging>
+    <name>slime-distributed-scheduler-core</name>
+    <dependencies>
+
+        
+    </dependencies>
+    <build>
+        <finalName>slime-distributed-scheduler-core</finalName>
+    </build>
+</project>

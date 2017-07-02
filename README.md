@@ -819,6 +819,10 @@ public class DataSourceService {
 
 * 值得注意的是，多数据源的事务属于分布式事务的范畴，因此像spring-jdbc包的**DataSourceTransactionManager**以及Hibernate自带的**HibernateTransactionManager**是无法保证多数据源的事务性，更详细的分析请自行搜索分布式事务。
 
+## slime-distributed-scheduler
+
+**基于Spring和Quartz实现的分布式任务调度器，有两种选择：中心化(触发器集中管理，客户端任务等待服务端触发)和去中心化(触发器交由客户端自身管理，任务由客户端自身触发，服务端只负责注册、监控和收集数据)。**
+
 ## 未完待续...
 
 

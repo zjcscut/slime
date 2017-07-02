@@ -14,6 +14,7 @@
         <module>slime-distributed-lock-redisson</module>
         <module>slime-distributed</module>
         <module>slime-dynamic-druid-datasource</module>
+        <module>slime-distributed-scheduler</module>
     </modules>
     <name>slime</name>
     <properties>
