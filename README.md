@@ -817,7 +817,7 @@ public class DataSourceService {
 }
 ```
 
-* 值得注意的是，多数据源的事务属于分布式事务的范畴，因此像spring-jdbc包的**DataSourceTransactionManager**已经Hibernate自带的**HibernateTransactionManager**是无法保证多数据源的事务性，更详细的分析请自行搜索分布式事务。
+* 值得注意的是，多数据源的事务属于分布式事务的范畴，因此像spring-jdbc包的**DataSourceTransactionManager**以及Hibernate自带的**HibernateTransactionManager**是无法保证多数据源的事务性，更详细的分析请自行搜索分布式事务。
 
 ## 未完待续...
 
