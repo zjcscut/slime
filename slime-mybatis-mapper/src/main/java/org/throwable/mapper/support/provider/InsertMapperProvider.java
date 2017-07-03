@@ -17,44 +17,69 @@ import static org.throwable.mapper.support.assist.SqlAppendAssistor.getIdentityC
  */
 public class InsertMapperProvider extends AbstractMapperTemplate {
 
-	public InsertMapperProvider(Class<?> mapperClass, MapperTemplateAssistor mapperTemplateAssistor) {
-		super(mapperClass, mapperTemplateAssistor);
-	}
+    public InsertMapperProvider(Class<?> mapperClass, MapperTemplateAssistor mapperTemplateAssistor) {
+        super(mapperClass, mapperTemplateAssistor);
+    }
 
-	public String insert(MappedStatement ms) {
-		val entityClass = getEntityClass(ms);
-		//主键回写
-		getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
-		//拼接动态SQL
-		val builder = new StringBuilder(checkDefaultParamValue());
-		builder.append(insertIntoTable(entityClass, tableName(entityClass)));
-		builder.append(insertColumns(entityClass, null, true));
-		builder.append(insertValues(entityClass, null, true));
-		return builder.toString();
-	}
+    public String insert(MappedStatement ms) {
+        val entityClass = getEntityClass(ms);
+        //主键回写
+        getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
+        //拼接动态SQL
+        val builder = new StringBuilder(checkDefaultParamValue());
+        builder.append(insertIntoTable(entityClass, tableName(entityClass)));
+        builder.append(insertColumns(entityClass, null, true, false));
+        builder.append(insertValues(entityClass, null, true, false));
+        return builder.toString();
+    }
 
-	public String insertNoneSkipPrimaryKey(MappedStatement ms) {
-		val entityClass = getEntityClass(ms);
-		//主键回写
-		getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
-		//拼接动态SQL
-		val builder = new StringBuilder(checkDefaultParamValue());
-		builder.append(insertIntoTable(entityClass, tableName(entityClass)));
-		builder.append(insertColumns(entityClass, null, false));
-		builder.append(insertValues(entityClass, null, false));
-		return builder.toString();
-	}
 
-	public String insertIngore(MappedStatement ms) {
-		val entityClass = getEntityClass(ms);
-		//主键回写
-		getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
-		//拼接动态SQL
-		val builder = new StringBuilder(checkDefaultParamValue());
-		builder.append(insertIgnoreIntoTable(entityClass, tableName(entityClass)));
-		builder.append(insertColumns(entityClass, null, false));
-		builder.append(insertValues(entityClass, null, false));
-		return builder.toString();
-	}
+    public String insertNoneSkipPrimaryKey(MappedStatement ms) {
+        val entityClass = getEntityClass(ms);
+        //主键回写
+        getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
+        //拼接动态SQL
+        val builder = new StringBuilder(checkDefaultParamValue());
+        builder.append(insertIntoTable(entityClass, tableName(entityClass)));
+        builder.append(insertColumns(entityClass, null, false, false));
+        builder.append(insertValues(entityClass, null, false, false));
+        return builder.toString();
+    }
+
+    public String insertIngore(MappedStatement ms) {
+        val entityClass = getEntityClass(ms);
+        //主键回写
+        getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
+        //拼接动态SQL
+        val builder = new StringBuilder(checkDefaultParamValue());
+        builder.append(insertIgnoreIntoTable(entityClass, tableName(entityClass)));
+        builder.append(insertColumns(entityClass, null, false, false));
+        builder.append(insertValues(entityClass, null, false, false));
+        return builder.toString();
+    }
+
+    public String insertSkipNull(MappedStatement ms) {
+        val entityClass = getEntityClass(ms);
+        //主键回写
+        getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
+        //拼接动态SQL
+        val builder = new StringBuilder(checkDefaultParamValue());
+        builder.append(insertIntoTable(entityClass, tableName(entityClass)));
+        builder.append(insertColumns(entityClass, null, true, true));
+        builder.append(insertValues(entityClass, null, true, true));
+        return builder.toString();
+    }
+
+    public String insertNoneSkipPrimaryKeyAndSkipNull(MappedStatement ms) {
+        val entityClass = getEntityClass(ms);
+        //主键回写
+        getIdentityColumn(entityClass).ifPresent(column -> newSelectKeyMappedStatement(ms, column));
+        //拼接动态SQL
+        val builder = new StringBuilder(checkDefaultParamValue());
+        builder.append(insertIntoTable(entityClass, tableName(entityClass)));
+        builder.append(insertColumns(entityClass, null, false, true));
+        builder.append(insertValues(entityClass, null, false, true));
+        return builder.toString();
+    }
 
 }

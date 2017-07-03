@@ -23,4 +23,10 @@ public interface InsertMapper<T> {
 	@InsertProvider(type = InsertMapperProvider.class, method = "dynamicSQL")
 	int insertIngore(T t);
 
+	@InsertProvider(type = InsertMapperProvider.class, method = "dynamicSQL")
+	int insertSkipNull(T t);
+
+	@InsertProvider(type = InsertMapperProvider.class, method = "dynamicSQL")
+	int insertNoneSkipPrimaryKeyAndSkipNull(T t);
+
 }

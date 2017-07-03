@@ -32,8 +32,6 @@ public final class JacksonUtils {
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	static {
-		//设置输出时包含属性的风格
-		mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
 		//设置日期输出格式
 		mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 		//禁用未知属性打断序列化

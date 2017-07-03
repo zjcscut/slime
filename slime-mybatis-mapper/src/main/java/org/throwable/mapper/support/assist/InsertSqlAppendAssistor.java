@@ -61,7 +61,7 @@ public abstract class InsertSqlAppendAssistor extends SqlAppendAssistor {
      *
      * @param entityClass 实体类
      */
-    public static String insertColumns(Class<?> entityClass, FieldFilter fieldFilter, boolean skipPrimaryKey) {
+    public static String insertColumns(Class<?> entityClass, FieldFilter fieldFilter, boolean skipPrimaryKey, boolean skipNull) {
         Set<EntityColumn> columnList = getFilterColumns(entityClass, fieldFilter, skipPrimaryKey);
         StringBuilder sql = new StringBuilder();
         sql.append("<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
@@ -70,7 +70,7 @@ public abstract class InsertSqlAppendAssistor extends SqlAppendAssistor {
                 continue;
             }
             //当该列在数据库中明确定义为not null，则加上!=null的判断
-            if (isNotNull(column)) {
+            if (skipNull || isNotNull(column)) {
                 sql.append(getIfNotNull(column, column.getColumn() + ","));
             } else {
                 sql.append(column.getColumn()).append(",");
@@ -80,7 +80,7 @@ public abstract class InsertSqlAppendAssistor extends SqlAppendAssistor {
         return sql.toString();
     }
 
-    public static String insertValues(Class<?> entityClass, FieldFilter fieldFilter, boolean skipPrimaryKey) {
+    public static String insertValues(Class<?> entityClass, FieldFilter fieldFilter, boolean skipPrimaryKey, boolean skipNull) {
         Set<EntityColumn> columnList = getFilterColumns(entityClass, fieldFilter, skipPrimaryKey);
         StringBuilder sql = new StringBuilder();
         sql.append("<trim prefix=\"VALUES(\" suffix=\")\" suffixOverrides=\",\">");
@@ -90,7 +90,7 @@ public abstract class InsertSqlAppendAssistor extends SqlAppendAssistor {
             }
             //当该列在数据库中明确定义为not null，必须加上!=null的判断
             String content = getColumnHolderWithComma(column);
-            if (isNotNull(column)) {
+            if (skipNull || isNotNull(column)) {
                 sql.append(getIfNotNull(column, content));
             } else {
                 sql.append(content);
