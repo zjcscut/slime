@@ -18,35 +18,40 @@ import java.lang.annotation.*;
 @Repeatable(value = SlimeRabbitListeners.class)
 public @interface SlimeRabbitListener {
 
-	/**
-	 * mq instance signature
-	 */
-	String instanceSignature();
+    /**
+     * mq instance signature
+     */
+    String instanceSignature();
 
-	/**
-	 * queue name array,if this field is defined,you must not to define bindings
-	 */
-	String[] queues() default {};
+    /**
+     * queue name array,if this field is defined,you must not to define bindings
+     */
+    String[] queues() default {};
 
-	/**
-	 *  initial number of consumer
-	 */
-	int concurrentConsumers() default 1;
+    /**
+     *  initial number of consumer
+     */
+    String concurrentConsumers() default "1";
 
-	/**
-	 *  max number of consumer
-	 */
-	int maxConcurrentConsumers() default 10;
+    /**
+     *  max number of consumer
+     */
+    String maxConcurrentConsumers() default "10";
 
-	/**
-	 * rabbitmq priority
-	 */
-	String priority() default "";
+    /**
+     * rabbitmq priority
+     */
+    String priority() default "";
 
-	/**
-	 * binding parameters
-	 * @see org.springframework.amqp.rabbit.annotation.RabbitListener
-	 */
-	QueueBinding[] bindings() default {};
+    /**
+     * binding parameters
+     * @see org.springframework.amqp.rabbit.annotation.RabbitListener
+     */
+    QueueBinding[] bindings() default {};
+
+    /**
+     * the suffix of queue to listen
+     */
+    String suffix() default "";
 
 }

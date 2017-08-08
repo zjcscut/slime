@@ -1,6 +1,7 @@
 package org.throwable.rabbitmq.support;
 
 import jodd.util.ArraysUtil;
+import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.Argument;
@@ -57,6 +58,8 @@ import static org.springframework.amqp.rabbit.annotation.RabbitListenerAnnotatio
 @Slf4j
 public class SlimeRabbitmqListenerAnnotationProcessor
         implements BeanFactoryAware, BeanClassLoaderAware, BeanPostProcessor, Ordered, SmartInitializingSingleton {
+
+    public static final String QUEUE_TO_LISTEN_SUFFIX_SYSTEMPROP_KEY = "SLIME_QUEUE_TO_LISTEN_SUFFIX";
 
     private String containerFactoryBeanName = DEFAULT_RABBIT_LISTENER_CONTAINER_FACTORY_BEAN_NAME;
 
@@ -197,8 +200,14 @@ public class SlimeRabbitmqListenerAnnotationProcessor
                                  Object target, String beanName) {
         String instanceSignature = slimeRabbitListener.instanceSignature();
         Assert.hasText(instanceSignature, String.format("Listener [%s] instanceSignature must not be empty!", beanName));
+        instanceSignature = resolveExpressionAsString(instanceSignature, "@SlimeRabbitListener.instanceSignature");
         InstanceHolder instanceHolder = RabbitRegistrarPropertiesManager.getConsumerInstance(instanceSignature);
         Assert.notNull(instanceHolder, String.format("Rabbitmq instance of Listener [%s] must not be null!", beanName));
+        Integer concurrentConsumers = resolveExpressionAsInteger(slimeRabbitListener.concurrentConsumers(), "@SlimeRabbitListener.concurrentConsumers");
+        Assert.notNull(concurrentConsumers, String.format("Rabbitmq concurrentConsumers of Listener [%s] must not be null!", beanName));
+        Integer maxConcurrentConsumers = resolveExpressionAsInteger(slimeRabbitListener.maxConcurrentConsumers(), "@SlimeRabbitListener.maxConcurrentConsumers");
+        Assert.notNull(maxConcurrentConsumers, String.format("Rabbitmq maxConcurrentConsumers of Listener [%s] must not be null!", beanName));
+
         endpoint.setBean(bean);
         endpoint.setMessageHandlerMethodFactory(this.messageHandlerMethodFactory);
         endpoint.setId(resolveEndpointId(slimeRabbitListener));
@@ -215,13 +224,14 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         endpoint.setAdmin(beanFactory.getBean(RebbitmqConstants.RABBITADMIN_NAME_PREFIX + instanceSignature, RabbitAdmin.class));
         //#resolveListenerQueues这个方法是声明队列、交互器和绑定的核心方法,因为涉及到多mq实例,为了避免bean冲突,使用各个mq实例的RabbitAdmin进行声明
         BindingParameterHolder holder = resolveListenerQueues(slimeRabbitListener, endpoint.getAdmin());
+
         endpoint.setQueueNames(holder.getQueueNames().toArray(new String[holder.getQueueNames().size()]));
         //SimpleRabbitListenerContainerFactory在容器中的beanName为
-		//rabbitListenerContainerFactory#instanceSignature[concurrentConsumers,maxConcurrentConsumers]
+        //rabbitListenerContainerFactory#instanceSignature[concurrentConsumers,maxConcurrentConsumers]
         String containerFactoryName = resolveRabbitListenerContainerFactoryNameSuffix(
                 RebbitmqConstants.RABBIT_MESSAGE_LISTENER_CONTAINER_FACTORY_NAME_PREFIX,
                 instanceSignature,
-                slimeRabbitListener.concurrentConsumers(), slimeRabbitListener.maxConcurrentConsumers());
+                concurrentConsumers, maxConcurrentConsumers);
         if (beanFactory.containsBean(containerFactoryName)) {
             containerFactory = beanFactory.getBean(containerFactoryName, SimpleRabbitListenerContainerFactory.class);
         } else {
@@ -230,8 +240,8 @@ public class SlimeRabbitmqListenerAnnotationProcessor
                     CachingConnectionFactory.class);
             containerFactory.setConnectionFactory(connectionFactory);
             containerFactory.setAcknowledgeMode(AcknowledgeMode.NONE);  //default none
-            containerFactory.setConcurrentConsumers(slimeRabbitListener.concurrentConsumers());
-            containerFactory.setMaxConcurrentConsumers(slimeRabbitListener.maxConcurrentConsumers());
+            containerFactory.setConcurrentConsumers(concurrentConsumers);
+            containerFactory.setMaxConcurrentConsumers(maxConcurrentConsumers);
             containerFactory.setMessageConverter(contentTypeDelegatingMessageConverter());
             beanFactory.registerSingleton(containerFactoryName, containerFactory);
         }
@@ -242,7 +252,8 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         this.registrar.registerEndpoint(endpoint, containerFactory);
         //把注册的listener信息写入manager属性缓存
         RabbitRegistrarPropertiesManager.addConsumerBindingParameter(instanceSignature,
-                resolveConsumerBindingParameter(slimeRabbitListener, bean.getClass().getCanonicalName(), holder));
+                resolveConsumerBindingParameter(bean.getClass().getCanonicalName(), holder,
+                        concurrentConsumers, maxConcurrentConsumers));
     }
 
     private String resolveRabbitListenerContainerFactoryNameSuffix(String beanName, String instanceSignature, int initSize, int maxSize) {
@@ -251,7 +262,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
 
     private String resolveEndpointId(SlimeRabbitListener slimeRabbitListener) {
         return "org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#"
-				+ ArraysUtil.toString(slimeRabbitListener.queues()) + this.counter.getAndIncrement();
+                + ArraysUtil.toString(slimeRabbitListener.queues()) + this.counter.getAndIncrement();
     }
 
     private BindingParameterHolder resolveListenerQueues(SlimeRabbitListener slimeRabbitListener, RabbitAdmin rabbitAdmin) {
@@ -269,8 +280,9 @@ public class SlimeRabbitmqListenerAnnotationProcessor
             for (int i = 0; i < queues.length; i++) {
                 Object resolvedValue = resolveExpression(queues[i]);
                 resolveAsString(resolvedValue, result);
-                holder.setQueueNames(result);
             }
+            result.forEach(each -> each = resolveQueueNameForSuffix(slimeRabbitListener.suffix(), each));
+            holder.setQueueNames(result);
         } else {
             registerBeansForDeclaration(slimeRabbitListener, rabbitAdmin, holder);
         }
@@ -471,7 +483,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
                                              BindingParameterHolder holder) {
         if (this.beanFactory instanceof ConfigurableBeanFactory) {
             for (QueueBinding binding : rabbitListener.bindings()) {
-                String queueName = declareQueue(binding, rabbitAdmin);
+                String queueName = declareQueue(rabbitListener, binding, rabbitAdmin);
                 List<String> queues = new ArrayList<>();
                 queues.add(queueName);
                 holder.setQueueNames(queues);
@@ -480,7 +492,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         }
     }
 
-    private String declareQueue(QueueBinding binding, RabbitAdmin rabbitAdmin) {
+    private String declareQueue(SlimeRabbitListener rabbitListener, QueueBinding binding, RabbitAdmin rabbitAdmin) {
         org.springframework.amqp.rabbit.annotation.Queue bindingQueue = binding.value();
         String queueName = (String) resolveExpression(bindingQueue.value());
         boolean exclusive = false;
@@ -500,6 +512,7 @@ public class SlimeRabbitmqListenerAnnotationProcessor
             exclusive = resolveExpressionAsBoolean(bindingQueue.exclusive());
             autoDelete = resolveExpressionAsBoolean(bindingQueue.autoDelete());
         }
+        queueName = resolveQueueNameForSuffix(rabbitListener.suffix(), queueName);
         org.springframework.amqp.core.Queue queue = new org.springframework.amqp.core.Queue(queueName,
                 resolveExpressionAsBoolean(bindingQueue.durable()),
                 exclusive,
@@ -663,6 +676,16 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         }
     }
 
+    private Integer resolveExpressionAsInteger(String value, String attribute) {
+        Object resolved = resolveExpression(value);
+        if (resolved instanceof String) {
+            return Integer.valueOf((String) resolved);
+        } else {
+            throw new IllegalStateException("The [" + attribute + "] must resolve to a Integer. "
+                    + "Resolved to [" + resolved.getClass() + "] for [" + value + "]");
+        }
+    }
+
     private Object resolveExpression(String value) {
         String resolvedValue = resolve(value);
 
@@ -685,7 +708,9 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         return value;
     }
 
-    private ConsumerBindingParameter resolveConsumerBindingParameter(SlimeRabbitListener slimeRabbitListener, String className, BindingParameterHolder holder) {
+    private ConsumerBindingParameter resolveConsumerBindingParameter(String className,
+                                                                     BindingParameterHolder holder, Integer concurrentConsumers,
+                                                                     Integer maxConcurrentConsumers) {
         ConsumerBindingParameter consumerBindingParameter = new ConsumerBindingParameter();
         int nameSize = holder.getQueueNames().size();
         if (1 == nameSize) {
@@ -693,9 +718,9 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         } else {
             consumerBindingParameter.setQueueName(ArraysUtil.toString(holder.getQueueNames().toArray(new String[nameSize])));
         }
-        consumerBindingParameter.setAcknowledgeMode("AUTO");
-        consumerBindingParameter.setConcurrentConsumers(slimeRabbitListener.concurrentConsumers());
-        consumerBindingParameter.setMaxConcurrentConsumers(slimeRabbitListener.maxConcurrentConsumers());
+        consumerBindingParameter.setAcknowledgeMode("NONE");
+        consumerBindingParameter.setConcurrentConsumers(concurrentConsumers);
+        consumerBindingParameter.setMaxConcurrentConsumers(maxConcurrentConsumers);
         consumerBindingParameter.setListenerClassName(className);
         consumerBindingParameter.setExchangeName(holder.getExchangeName());
         consumerBindingParameter.setExchangeType(holder.getExchangeType());
@@ -751,5 +776,20 @@ public class SlimeRabbitmqListenerAnnotationProcessor
         converter.addDelegate(MediaType.APPLICATION_JSON_VALUE, new Jackson2JsonMessageConverter());
         converter.addDelegate(MediaType.TEXT_PLAIN_VALUE, new Jackson2JsonMessageConverter());
         return converter;
+    }
+
+
+    private String resolveQueueNameForSuffix(String suffix, String queueName) {
+        Assert.hasText(queueName, "SlimeRabbitListener queueName must not be empty!");
+        if (StringUtil.isNotBlank(suffix)) {
+            return queueName.endsWith(".") ? queueName : queueName.concat(".") + resolveExpressionAsString(suffix, "@SlimeRabbitListener.suffix");
+        } else {
+            String sysSuffix = System.getProperty(QUEUE_TO_LISTEN_SUFFIX_SYSTEMPROP_KEY);
+            if (StringUtil.isNotBlank(sysSuffix)) {
+                return queueName.endsWith(".") ? queueName : queueName.concat(".") + sysSuffix;
+            } else {
+                return queueName;
+            }
+        }
     }
 }

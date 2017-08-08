@@ -15,6 +15,7 @@
         <module>slime-distributed</module>
         <module>slime-dynamic-druid-datasource</module>
         <module>slime-distributed-scheduler</module>
+        <module>slime-cache</module>
     </modules>
     <name>slime</name>
     <properties>
